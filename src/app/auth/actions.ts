@@ -18,6 +18,22 @@ export async function login(formData: FormData) {
         return { error: error.message }
     }
 
+    // Check role to redirect admin to dashboard
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+        revalidatePath('/', 'layout')
+
+        if (profile?.role === 'admin') {
+            redirect('/admin')
+        }
+    }
+
     revalidatePath('/', 'layout')
     redirect('/')
 }
@@ -40,9 +56,6 @@ export async function register(formData: FormData) {
     const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL ? '' : ''}${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/auth/callback`,
-        },
     })
 
     if (error) {

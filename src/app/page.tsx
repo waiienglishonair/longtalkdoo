@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import HeaderAuth from '@/app/components/HeaderAuth'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
   return <span className={`material-symbols-outlined ${className}`}>{name}</span>
@@ -45,9 +46,7 @@ export default function HomePage() {
                 <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
                   <MaterialIcon name="notifications" />
                 </button>
-                <Link href="#" className="bg-white text-primary text-sm font-bold px-5 py-2 rounded-lg hover:bg-gray-100 transition-colors shadow-sm">
-                  เข้าสู่ระบบ
-                </Link>
+                <HeaderAuth />
               </div>
             </div>
           </div>
@@ -248,10 +247,10 @@ export default function HomePage() {
 
         {/* ─── BOTTOM NAV (mobile only) ─── */}
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-8 py-3 flex justify-between items-center z-50 max-w-md mx-auto shadow-[0_-10px_25px_rgba(0,0,0,0.05)] lg:hidden">
-          <NavItem icon="home" label="หน้าแรก" active />
-          <NavItem icon="menu_book" label="ห้องเรียน" />
-          <NavItem icon="shopping_bag" label="ร้านค้า" />
-          <NavItem icon="person" label="โปรไฟล์" />
+          <NavItem icon="home" label="หน้าแรก" href="/" active />
+          <NavItem icon="menu_book" label="ห้องเรียน" href="#" />
+          <NavItem icon="shopping_bag" label="ร้านค้า" href="#" />
+          <NavItem icon="person" label="โปรไฟล์" href="/profile" />
         </nav>
       </div>
     </div>
@@ -304,9 +303,9 @@ function CourseCard({
   )
 }
 
-function NavItem({ icon, label, active = false }: { icon: string; label: string; active?: boolean }) {
+function NavItem({ icon, label, href = '#', active = false }: { icon: string; label: string; href?: string; active?: boolean }) {
   return (
-    <Link href="#" className={`flex flex-col items-center gap-1 transition-colors ${active ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}>
+    <Link href={href} className={`flex flex-col items-center gap-1 transition-colors ${active ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}>
       <MaterialIcon name={icon} className={active ? 'fill-1' : ''} />
       <span className={`text-[10px] ${active ? 'font-bold' : 'font-medium'}`}>{label}</span>
     </Link>
