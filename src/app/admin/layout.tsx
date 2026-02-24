@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { logout } from '@/app/auth/actions'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -17,7 +18,8 @@ export default async function AdminLayout({
 
     if (!user) redirect('/login')
 
-    const { data: profile } = await supabase
+    const adminClient = createAdminClient()
+    const { data: profile } = await adminClient
         .from('profiles')
         .select('role, display_name, email')
         .eq('id', user.id)

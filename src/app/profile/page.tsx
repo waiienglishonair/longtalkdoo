@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { logout } from '@/app/auth/actions'
@@ -13,7 +14,9 @@ export default async function ProfilePage() {
 
     if (!user) redirect('/login')
 
-    const { data: profile } = await supabase
+    // Use admin client to bypass RLS
+    const adminClient = createAdminClient()
+    const { data: profile } = await adminClient
         .from('profiles')
         .select('*')
         .eq('id', user.id)

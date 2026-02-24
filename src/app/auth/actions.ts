@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 export async function login(formData: FormData) {
     const supabase = await createClient()
@@ -23,7 +24,8 @@ export async function login(formData: FormData) {
     let role = 'user'
 
     if (user) {
-        const { data: profile } = await supabase
+        const adminClient = createAdminClient()
+        const { data: profile } = await adminClient
             .from('profiles')
             .select('role')
             .eq('id', user.id)
