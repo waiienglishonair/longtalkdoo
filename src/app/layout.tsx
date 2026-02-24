@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'LongTalkDoo - Speak English with Confidence',
-  description: 'Interactive lessons designed for fast learning and real conversations.',
+  title: 'LongTalkDoo - พูดภาษาอังกฤษอย่างมั่นใจ',
+  description: 'บทเรียนแบบอินเทอร์แอคทีฟ ออกแบบเพื่อการเรียนรู้ที่รวดเร็วและการสนทนาจริง',
 }
 
 export default function RootLayout({

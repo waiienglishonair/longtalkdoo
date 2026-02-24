@@ -30,10 +30,10 @@ export default function HomePage() {
 
             {/* Desktop nav links */}
             <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
-              <Link href="#" className="text-white/90 hover:text-white transition-colors border-b-2 border-white pb-0.5">Home</Link>
-              <Link href="#" className="text-white/70 hover:text-white transition-colors">Courses</Link>
-              <Link href="#" className="text-white/70 hover:text-white transition-colors">Store</Link>
-              <Link href="#" className="text-white/70 hover:text-white transition-colors">About</Link>
+              <Link href="#" className="text-white/90 hover:text-white transition-colors border-b-2 border-white pb-0.5">หน้าแรก</Link>
+              <Link href="#" className="text-white/70 hover:text-white transition-colors">คอร์สเรียน</Link>
+              <Link href="#" className="text-white/70 hover:text-white transition-colors">ร้านค้า</Link>
+              <Link href="#" className="text-white/70 hover:text-white transition-colors">เกี่ยวกับเรา</Link>
             </nav>
 
             {/* Right side */}
@@ -46,7 +46,7 @@ export default function HomePage() {
                   <MaterialIcon name="notifications" />
                 </button>
                 <Link href="#" className="bg-white text-primary text-sm font-bold px-5 py-2 rounded-lg hover:bg-gray-100 transition-colors shadow-sm">
-                  Sign In
+                  เข้าสู่ระบบ
                 </Link>
               </div>
             </div>
@@ -61,12 +61,12 @@ export default function HomePage() {
                 <MaterialIcon name="local_offer" className="text-lg" />
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                <span className="text-[9px] sm:text-xs font-bold opacity-90 uppercase tracking-tighter">New User Promo</span>
-                <span className="text-sm font-semibold">Claim your ฿300 discount</span>
+                <span className="text-[9px] sm:text-xs font-bold opacity-90 uppercase tracking-tighter">โปรโมชั่นสมาชิกใหม่</span>
+                <span className="text-sm font-semibold">รับส่วนลด ฿300 ทันที</span>
               </div>
             </div>
             <button className="bg-white text-secondary text-[10px] font-bold px-4 py-1.5 rounded-lg shadow-sm active:scale-95 transition-transform uppercase tracking-wider flex-shrink-0">
-              Claim Now
+              รับเลย
             </button>
           </div>
         </div>
@@ -83,16 +83,16 @@ export default function HomePage() {
               </div>
 
               <div className="relative z-10 space-y-2 lg:space-y-4 lg:flex-1">
-                <span className="inline-block px-2 py-0.5 lg:px-3 lg:py-1 bg-primary/10 text-primary text-[10px] lg:text-xs font-bold tracking-wider uppercase rounded">English Mastery</span>
+                <span className="inline-block px-2 py-0.5 lg:px-3 lg:py-1 bg-primary/10 text-primary text-[10px] lg:text-xs font-bold tracking-wider uppercase rounded">เรียนภาษาอังกฤษ</span>
                 <h2 className="text-2xl lg:text-5xl font-bold leading-tight text-gray-900">
-                  Speak English <br />
-                  <span className="text-primary font-[var(--font-brand)]">with Confidence</span>
+                  พูดภาษาอังกฤษ <br />
+                  <span className="text-primary font-[var(--font-brand)]">อย่างมั่นใจ</span>
                 </h2>
                 <p className="text-xs lg:text-base text-text-sub max-w-[70%] lg:max-w-md leading-relaxed">
-                  Interactive lessons designed for fast learning and real conversations.
+                  บทเรียนแบบอินเทอร์แอคทีฟ ออกแบบเพื่อการเรียนรู้ที่รวดเร็วและการสนทนาจริง
                 </p>
                 <button className="relative z-10 bg-primary hover:bg-primary-dark text-white text-sm lg:text-base font-semibold px-6 lg:px-8 py-3 lg:py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center gap-2 group mt-2">
-                  Start Learning
+                  เริ่มเรียนเลย
                   <MaterialIcon name="arrow_forward" className="text-sm group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -112,17 +112,17 @@ export default function HomePage() {
           <section className="mt-8 lg:mt-12">
             <h3 className="text-sm lg:text-base font-bold mb-4 flex items-center gap-2 text-gray-800">
               <span className="w-1.5 h-4 bg-primary rounded-full"></span>
-              Top Categories
+              หมวดหมู่ยอดนิยม
             </h3>
             <div className="flex gap-4 lg:gap-6 overflow-x-auto hide-scrollbar pb-2 lg:overflow-visible lg:flex-wrap">
-              <CategoryItem icon="child_care" label="Basic" />
-              <CategoryItem icon="forum" label="Dialogue" />
-              <CategoryItem icon="business_center" label="Business" />
-              <CategoryItem icon="flight_takeoff" label="Travel" />
-              <CategoryItem icon="headphones" label="Listening" desktopOnly />
-              <CategoryItem icon="edit_note" label="Writing" desktopOnly />
-              <CategoryItem icon="record_voice_over" label="Speaking" desktopOnly />
-              <CategoryItem icon="more_horiz" label="All" isDefault />
+              <CategoryItem icon="child_care" label="พื้นฐาน" />
+              <CategoryItem icon="forum" label="บทสนทนา" />
+              <CategoryItem icon="business_center" label="ธุรกิจ" />
+              <CategoryItem icon="flight_takeoff" label="ท่องเที่ยว" />
+              <CategoryItem icon="headphones" label="ฟัง" desktopOnly />
+              <CategoryItem icon="edit_note" label="เขียน" desktopOnly />
+              <CategoryItem icon="record_voice_over" label="พูด" desktopOnly />
+              <CategoryItem icon="more_horiz" label="ทั้งหมด" isDefault />
             </div>
           </section>
 
@@ -131,46 +131,46 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-4 lg:mb-6">
               <h3 className="text-lg lg:text-xl font-bold flex items-center gap-2 text-gray-900">
                 <MaterialIcon name="local_fire_department" className="text-secondary fill-1" />
-                Featured Courses
+                คอร์สแนะนำ
               </h3>
-              <Link href="#" className="text-xs lg:text-sm text-primary font-bold hover:underline">VIEW ALL</Link>
+              <Link href="#" className="text-xs lg:text-sm text-primary font-bold hover:underline">ดูทั้งหมด</Link>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
               <CourseCard
-                title="English Grammar: Zero to Hero"
-                instructor="Kru Whan"
+                title="ไวยากรณ์อังกฤษ: จากศูนย์สู่ฮีโร่"
+                instructor="ครูวรรณ"
                 originalPrice="฿3,500"
                 salePrice="฿1,590"
-                badge="HOT"
+                badge="ฮิต"
                 badgeColor="bg-secondary"
                 image="https://lh3.googleusercontent.com/aida-public/AB6AXuC38u1UZ08eLkeCvTNCFAE9mXmmnwVvrXrRc8_B3jLbT9ZX8nsp2Svkp53koZzBGXp8Uz9y_hCth3qogfg3FqTSZEeNh5dIZhQglOpWvUW48p-wAaRx-_FZPxbAzCis3NKauNq0B2pXgSuRb0CSsrdJyOuZBGM8sBrRhwlLGgf0pScLj_9EeWUPcACigcI5a9QxwmbiQOWaPICsq61bOSw5-Bbol01joCt5004jtl4UuQnGg1E18gXm1az0HwVWcHBAX-S7huEPPyk"
                 instructorImage="https://lh3.googleusercontent.com/aida-public/AB6AXuDqCHlRepjMzRkHzYKbz1mYezVVfR_Vd4q1AFpxYyeNFuIDQX-ZNi0XVVVAeEYIGs5wsApjbC0z3Wf1voN_-xO5e9PWii8w5qquLynki0tK0HjJWJjK5r4NXwRRp8H6rqzcmQjxzqXmwmwaPHkCxva2UAvg4JasAJc-TUVVm52N_aJInqWhglmLwzXB1ld6LaCkTTCst9Gi4s2mAylmAoJJ_2Xtj53kd2A_dsHsdBQp1yly5ynLVwUmeF78vAp7tlq1-Wz98mt2sZ8"
               />
               <CourseCard
-                title="Business English Pro"
-                instructor="Ajarn Ping"
+                title="ภาษาอังกฤษธุรกิจ Pro"
+                instructor="อาจารย์ปิ่ง"
                 originalPrice="฿4,900"
                 salePrice="฿2,990"
-                badge="TOP SELLER"
+                badge="ขายดี"
                 badgeColor="bg-primary"
                 image="https://lh3.googleusercontent.com/aida-public/AB6AXuD_3zbBR7pzCTQfK7DRb4C689sVjsICHDEyM5iB8G91rT4W8wqdwgDxlaqGMNN7BxRNaYVm2PcpIfWryFPF-xjfbbmD3vmVwcAUihPDKsm0PROh-IjYnCKWlYN4jc9ci2_cY6F5qoYBFAgTcT-6jINo7_MnS2XE8xirppVUenqQ1o61lQmlJ-Ukrh0z_YHh1LFvgUb85YRwUz_knOMf2WbuSrY6W2WNcJsAycqZOpDFtU_jkAJJVTuOYh5zz9uwqegP5dqATzMdpuU"
                 instructorImage="https://lh3.googleusercontent.com/aida-public/AB6AXuD9c0hEI8aiZZKTFOy7m54FnN5v-823OjTJrqVPU-HvGUqvlLEYKHr5ED-IWd8IlIwtVtaBlqkTqhIJZCfpXCE0Jocw0sB2FvgcwY1xAcD9Ukz068Ez1zyId8jrHaceAaYjqk3VCV0hMiHJKijOYtjUwdujVqrVHAGYiDxtyiGfP0wYf7BqaNAi-e5xZ7nhj0ksvzl8SlmhFZQswFdcvBWAyG1mPDAdVwt4FuFYdaQMcl9A7KRcErjNxU0ndIGxLvmv6UA_A0v6MZw"
               />
               <CourseCard
-                title="Daily Slang & Expressions"
-                instructor="Teacher Sarah"
+                title="สแลงและสำนวนประจำวัน"
+                instructor="ครู Sarah"
                 originalPrice="฿1,200"
                 salePrice="฿890"
                 image="https://lh3.googleusercontent.com/aida-public/AB6AXuAaqmpaHXXLrp2O6b-DMtRV5RMkPDO7oOCX1Yf_AuohHc8Ku3y8b18roeCs-eYjw6zAQI4Co_oFyK25n4n3SvGv-Kzm7iulkb2phcrIb5JMeGHmiFaT1G2Kj2_wwb_hdQz1NOCAJX0OvQWqNjAf4-zVq7CluhUWTEpmNYYkWYunAB7A5szsm9eKZSwLz9XoG-f2axciHE9DRnh6xVf2BIMm4v7b_sBYdkX46fQKYeolzamPOWO_RKNhnxRJ0H00yYz8hz5RE0xLf70"
                 instructorImage="https://lh3.googleusercontent.com/aida-public/AB6AXuCmiz6V_5FDAViXbpgviHhH7Xi5ICOzyWqHXqqnPphm2vZAdhyovVjLpLZQqrsNsx8w3Orwhs0V4z4lGAfYVYHJzUZ18ttvK7Jx3hPevcVIISLvUTgTSxXuLbUIKP8S7gDxSvYVNkJOGNgcoPBKa7ztXlg3xpv3x9Qb5GqHz6yPzFdi_LJB6FIunHOVsIdYPStORbfTijeUw08KmLgzUrbZDaN1_e0b0x7kiRXmbcKirzseL0C2t98hXVQXgMj0K3of4013aVNOW1w"
               />
               <CourseCard
-                title="TOEIC Prep Intensive"
-                instructor="Kru Bird"
+                title="ติว TOEIC แบบเข้มข้น"
+                instructor="ครูเบิร์ด"
                 originalPrice="฿5,000"
                 salePrice="฿3,990"
-                badge="NEW"
+                badge="ใหม่"
                 badgeColor="bg-secondary"
                 image="https://lh3.googleusercontent.com/aida-public/AB6AXuDTUphizz0cVxSa3WTsCkpdVXMtozQSdrBLcVsvwRnOJ9EuKuLfwNUiJhxq0maB7ysiv2pdlDm_H8lzl-UObf_YkMFIFApDm0BBHHu1LNP4LvL32oDiW-2F321OGE8286E-ASt1p_E9kHh2KLyS6hvQC5W_5AUhYBnrGU6cEnHVdOfUnKrqcaW2s3n3Z25NNhE4Nmfl8QIb4VDVg0nW2IdZgS6BkkW1FmYfeeix_xCKs9lKl3QwW5FsN1e8-pdU-buFwMqFDICRWN4"
                 instructorImage="https://lh3.googleusercontent.com/aida-public/AB6AXuBz-mZwDIRtL0JV3GYkQ-fS8HfaoBb45MZQKmhUUWAsCT3dS5KCi7PUTnJc6XlN8S3DA_9loQkjsCc0eYIm9P4LQYUjstiQEsJ76sLXGiXK1hZgd0k2cLg066VjDXw0KbjWKuJhhG1G6ref_SjO52yIeMG4cS_Oe0UzP8wJsiB-P0UAnbUFmGT9SH_qwUMRsluy5atgFb-RJgSXGlw22HPqD-lNyXG7B_-WAajE0l7OxfM5JlOW2AZOy7RNcc2IeR02BVIQnKo6M7M"
@@ -185,11 +185,11 @@ export default function HomePage() {
                 <MaterialIcon name="workspace_premium" className="text-9xl lg:text-[12rem]" />
               </div>
               <div className="relative z-10 flex flex-col gap-1 lg:gap-2">
-                <span className="text-[10px] lg:text-xs opacity-80 uppercase tracking-[0.2em] font-black">All Access</span>
+                <span className="text-[10px] lg:text-xs opacity-80 uppercase tracking-[0.2em] font-black">เข้าถึงทุกคอร์ส</span>
                 <h4 className="text-xl lg:text-3xl font-bold">Premium Pass</h4>
-                <p className="text-xs lg:text-sm opacity-90 mb-4 max-w-[180px] lg:max-w-sm">Learn everything on LongTalkDoo for 1 year. Unlimited courses, quizzes, and certificates.</p>
+                <p className="text-xs lg:text-sm opacity-90 mb-4 max-w-[180px] lg:max-w-sm">เรียนทุกอย่างบน LongTalkDoo เป็นเวลา 1 ปี คอร์สไม่จำกัด แบบฝึกหัด และใบประกาศนียบัตร</p>
                 <button className="bg-white text-primary text-xs lg:text-sm font-bold py-2.5 lg:py-3 px-6 lg:px-8 rounded-full w-fit hover:bg-gray-50 transition-colors shadow-lg active:scale-95">
-                  Buy Now
+                  ซื้อเลย
                 </button>
               </div>
               <div className="w-16 h-16 lg:w-24 lg:h-24 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
@@ -211,47 +211,47 @@ export default function HomePage() {
                   </div>
                   <span className="text-lg font-[var(--font-brand)] font-bold text-text-main">LongTalkDoo</span>
                 </div>
-                <p className="text-sm text-text-sub leading-relaxed">Interactive English lessons designed for fast learning and real conversations.</p>
+                <p className="text-sm text-text-sub leading-relaxed">บทเรียนภาษาอังกฤษแบบอินเทอร์แอคทีฟ ออกแบบเพื่อการเรียนรู้ที่รวดเร็วและการสนทนาจริง</p>
               </div>
               <div>
-                <h5 className="font-bold text-sm text-text-main mb-3">Courses</h5>
+                <h5 className="font-bold text-sm text-text-main mb-3">คอร์สเรียน</h5>
                 <ul className="space-y-2 text-sm text-text-sub">
-                  <li><Link href="#" className="hover:text-primary transition-colors">Basic English</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Business English</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">TOEIC Prep</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Daily Slang</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ภาษาอังกฤษพื้นฐาน</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ภาษาอังกฤษธุรกิจ</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ติว TOEIC</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">สแลงประจำวัน</Link></li>
                 </ul>
               </div>
               <div>
-                <h5 className="font-bold text-sm text-text-main mb-3">Company</h5>
+                <h5 className="font-bold text-sm text-text-main mb-3">บริษัท</h5>
                 <ul className="space-y-2 text-sm text-text-sub">
-                  <li><Link href="#" className="hover:text-primary transition-colors">About Us</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Contact</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Careers</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Blog</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">เกี่ยวกับเรา</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ติดต่อ</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ร่วมงานกับเรา</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">บล็อก</Link></li>
                 </ul>
               </div>
               <div>
-                <h5 className="font-bold text-sm text-text-main mb-3">Support</h5>
+                <h5 className="font-bold text-sm text-text-main mb-3">ช่วยเหลือ</h5>
                 <ul className="space-y-2 text-sm text-text-sub">
-                  <li><Link href="#" className="hover:text-primary transition-colors">Help Center</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-                  <li><Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ศูนย์ช่วยเหลือ</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">ข้อกำหนดการใช้งาน</Link></li>
+                  <li><Link href="#" className="hover:text-primary transition-colors">นโยบายความเป็นส่วนตัว</Link></li>
                 </ul>
               </div>
             </div>
             <div className="mt-8 pt-6 border-t border-gray-100 text-center text-xs text-text-sub">
-              © 2026 LongTalkDoo. All rights reserved.
+              © 2026 LongTalkDoo สงวนลิขสิทธิ์
             </div>
           </div>
         </footer>
 
         {/* ─── BOTTOM NAV (mobile only) ─── */}
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-8 py-3 flex justify-between items-center z-50 max-w-md mx-auto shadow-[0_-10px_25px_rgba(0,0,0,0.05)] lg:hidden">
-          <NavItem icon="home" label="Home" active />
-          <NavItem icon="menu_book" label="My Class" />
-          <NavItem icon="shopping_bag" label="Store" />
-          <NavItem icon="person" label="Profile" />
+          <NavItem icon="home" label="หน้าแรก" active />
+          <NavItem icon="menu_book" label="ห้องเรียน" />
+          <NavItem icon="shopping_bag" label="ร้านค้า" />
+          <NavItem icon="person" label="โปรไฟล์" />
         </nav>
       </div>
     </div>

@@ -6,14 +6,14 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold mb-1 text-text-main">Welcome back, Admin</h1>
-                <p className="text-text-sub text-sm">Here&apos;s what&apos;s happening with your platform today.</p>
+                <h1 className="text-2xl font-bold mb-1 text-text-main">ยินดีต้อนรับกลับมา, แอดมิน</h1>
+                <p className="text-text-sub text-sm">สรุปสิ่งที่เกิดขึ้นบนแพลตฟอร์มของคุณวันนี้</p>
             </div>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <SummaryCard
-                    title="Total Revenue"
+                    title="รายได้ทั้งหมด"
                     value="฿124,500"
                     trend="+15%"
                     isPositive={true}
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
                     iconBg="bg-primary/10"
                 />
                 <SummaryCard
-                    title="Active Students"
+                    title="นักเรียนที่ใช้งาน"
                     value="1,248"
                     trend="+5.2%"
                     isPositive={true}
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
                     iconBg="bg-blue-50"
                 />
                 <SummaryCard
-                    title="Course Completions"
+                    title="เรียนจบ"
                     value="456"
                     trend="-2.1%"
                     isPositive={false}
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
                     iconBg="bg-purple-50"
                 />
                 <SummaryCard
-                    title="Avg Session"
+                    title="เวลาเฉลี่ย"
                     value="24m"
                     trend="+1.2%"
                     isPositive={true}
@@ -55,24 +55,24 @@ export default function AdminDashboard() {
                 {/* Recent Enrollments Table */}
                 <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
                     <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                        <h3 className="font-bold text-lg text-text-main">Recent Enrollments</h3>
-                        <button className="text-xs text-primary font-bold hover:underline transition-colors">View All</button>
+                        <h3 className="font-bold text-lg text-text-main">การลงทะเบียนล่าสุด</h3>
+                        <button className="text-xs text-primary font-bold hover:underline transition-colors">ดูทั้งหมด</button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left align-middle text-text-sub">
                             <thead className="text-xs uppercase bg-gray-50 text-gray-500 font-bold border-b border-gray-100">
                                 <tr>
-                                    <th scope="col" className="px-6 py-4">Student</th>
-                                    <th scope="col" className="px-6 py-4">Course</th>
-                                    <th scope="col" className="px-6 py-4">Status</th>
-                                    <th scope="col" className="px-6 py-4">Date</th>
+                                    <th scope="col" className="px-6 py-4">นักเรียน</th>
+                                    <th scope="col" className="px-6 py-4">คอร์ส</th>
+                                    <th scope="col" className="px-6 py-4">สถานะ</th>
+                                    <th scope="col" className="px-6 py-4">วันที่</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <TableRow student="Michael K." course="Business English Pro" status="Active" date="Today, 10:42 AM" />
-                                <TableRow student="Sarah L." course="TOEIC Prep Intensive" status="Active" date="Today, 09:15 AM" />
-                                <TableRow student="David W." course="English Grammar" status="Completed" date="Yesterday" />
-                                <TableRow student="Jessica T." course="Daily Slang" status="Active" date="Yesterday" />
+                                <TableRow student="ไมเคิล ก." course="ภาษาอังกฤษธุรกิจ Pro" status="กำลังเรียน" date="วันนี้, 10:42" />
+                                <TableRow student="ซาร่าห์ ล." course="ติว TOEIC แบบเข้มข้น" status="กำลังเรียน" date="วันนี้, 09:15" />
+                                <TableRow student="เดวิด ว." course="ไวยากรณ์อังกฤษ" status="เรียนจบ" date="เมื่อวาน" />
+                                <TableRow student="เจสซิก้า ท." course="สแลงประจำวัน" status="กำลังเรียน" date="เมื่อวาน" />
                             </tbody>
                         </table>
                     </div>
@@ -81,15 +81,15 @@ export default function AdminDashboard() {
                 {/* Top Performing Courses */}
                 <div className="bg-white rounded-2xl border border-gray-200 flex flex-col shadow-sm">
                     <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-                        <h3 className="font-bold text-lg text-text-main">Top Courses</h3>
+                        <h3 className="font-bold text-lg text-text-main">คอร์สยอดนิยม</h3>
                         <MaterialIcon name="trending_up" className="text-text-sub" />
                     </div>
                     <div className="p-2 flex-1">
                         <div className="space-y-1">
-                            <CourseListItem rank={1} name="Business English Pro" enrolls="450" />
-                            <CourseListItem rank={2} name="TOEIC Prep Intensive" enrolls="312" />
-                            <CourseListItem rank={3} name="English Grammar" enrolls="285" />
-                            <CourseListItem rank={4} name="Daily Slang" enrolls="154" />
+                            <CourseListItem rank={1} name="ภาษาอังกฤษธุรกิจ Pro" enrolls="450" />
+                            <CourseListItem rank={2} name="ติว TOEIC แบบเข้มข้น" enrolls="312" />
+                            <CourseListItem rank={3} name="ไวยากรณ์อังกฤษ" enrolls="285" />
+                            <CourseListItem rank={4} name="สแลงประจำวัน" enrolls="154" />
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ function SummaryCard({ title, value, trend, isPositive, icon, iconColor, iconBg 
 }
 
 function TableRow({ student, course, status, date }: { student: string; course: string; status: string; date: string }) {
-    const isCompleted = status === 'Completed'
+    const isCompleted = status === 'เรียนจบ'
     return (
         <tr className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
             <td className="px-6 py-4 font-medium text-text-main">
@@ -150,7 +150,7 @@ function CourseListItem({ rank, name, enrolls }: { rank: number; name: string; e
             </div>
             <div className="flex-1">
                 <h4 className="text-sm font-bold text-text-main mb-0.5 leading-none">{name}</h4>
-                <p className="text-xs text-text-sub">{enrolls} students</p>
+                <p className="text-xs text-text-sub">{enrolls} นักเรียน</p>
             </div>
         </div>
     )

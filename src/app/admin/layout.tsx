@@ -16,21 +16,21 @@ export default function AdminLayout({
                 <div className="p-6 border-b border-gray-100">
                     <Link href="/">
                         <h1 className="text-2xl font-[var(--font-brand)] font-extrabold text-primary">LongTalkDoo</h1>
-                        <p className="text-xs font-medium text-text-sub">Admin Panel</p>
+                        <p className="text-xs font-medium text-text-sub">แผงควบคุมแอดมิน</p>
                     </Link>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                    <SidebarItem icon="dashboard" label="Overview" active />
-                    <SidebarItem icon="group" label="Users" />
-                    <SidebarItem icon="menu_book" label="Courses" />
-                    <SidebarItem icon="settings" label="Settings" />
+                    <SidebarItem icon="dashboard" label="ภาพรวม" active />
+                    <SidebarItem icon="group" label="ผู้ใช้" />
+                    <SidebarItem icon="menu_book" label="คอร์สเรียน" />
+                    <SidebarItem icon="settings" label="ตั้งค่า" />
                 </nav>
 
                 <div className="p-4 border-t border-gray-100">
                     <button className="flex items-center gap-3 w-full p-3 rounded-lg text-text-sub hover:text-secondary hover:bg-red-50 transition-colors">
                         <MaterialIcon name="logout" className="text-xl" />
-                        <span className="font-medium">Sign Out</span>
+                        <span className="font-medium">ออกจากระบบ</span>
                     </button>
                 </div>
             </aside>
@@ -39,7 +39,7 @@ export default function AdminLayout({
             <main className="flex-1 flex flex-col overflow-hidden relative">
                 {/* Top Header */}
                 <header className="h-16 border-b border-gray-200 bg-white/80 backdrop-blur flex items-center justify-between px-6 z-10 shadow-sm">
-                    <h2 className="text-lg font-bold text-text-main">Dashboard</h2>
+                    <h2 className="text-lg font-bold text-text-main">แดชบอร์ด</h2>
                     <div className="flex items-center gap-4">
                         <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-text-sub">
                             <MaterialIcon name="notifications" className="text-xl" />
