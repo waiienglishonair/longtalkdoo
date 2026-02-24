@@ -15,11 +15,13 @@ export async function login(formData: FormData) {
     const { error } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
-        return { error: error.message }
+        return { error: error.message, role: null }
     }
 
-    // Check role to redirect admin to dashboard
+    // Check role to determine redirect target
     const { data: { user } } = await supabase.auth.getUser()
+    let role = 'user'
+
     if (user) {
         const { data: profile } = await supabase
             .from('profiles')
@@ -27,15 +29,11 @@ export async function login(formData: FormData) {
             .eq('id', user.id)
             .single()
 
-        revalidatePath('/', 'layout')
-
-        if (profile?.role === 'admin') {
-            redirect('/admin')
-        }
+        role = profile?.role || 'user'
     }
 
     revalidatePath('/', 'layout')
-    redirect('/')
+    return { error: null, role }
 }
 
 export async function register(formData: FormData) {

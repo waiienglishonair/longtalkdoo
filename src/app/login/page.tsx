@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { login } from '@/app/auth/actions'
 
@@ -11,6 +12,7 @@ function MaterialIcon({ name, className = '' }: { name: string; className?: stri
 export default function LoginPage() {
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const router = useRouter()
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -23,6 +25,13 @@ export default function LoginPage() {
         if (result?.error) {
             setError(result.error)
             setLoading(false)
+        } else {
+            // Redirect based on role
+            if (result?.role === 'admin') {
+                router.push('/admin')
+            } else {
+                router.push('/')
+            }
         }
     }
 
