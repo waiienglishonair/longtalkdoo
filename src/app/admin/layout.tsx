@@ -1,14 +1,33 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server'
+import { logout } from '@/app/auth/actions'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className}`}>{name}</span>
 }
 
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) redirect('/login')
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, display_name, email')
+        .eq('id', user.id)
+        .single()
+
+    if (profile?.role !== 'admin') redirect('/')
+
+    const displayName = profile?.display_name || user.email?.split('@')[0] || 'Admin'
+    const initial = displayName[0].toUpperCase()
+
     return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
             {/* Sidebar */}
@@ -21,17 +40,19 @@ export default function AdminLayout({
                 </div>
 
                 <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                    <SidebarItem icon="dashboard" label="ภาพรวม" active />
-                    <SidebarItem icon="group" label="ผู้ใช้" />
-                    <SidebarItem icon="menu_book" label="คอร์สเรียน" />
-                    <SidebarItem icon="settings" label="ตั้งค่า" />
+                    <SidebarItem icon="dashboard" label="ภาพรวม" href="/admin" />
+                    <SidebarItem icon="group" label="ผู้ใช้" href="/admin/users" />
+                    <SidebarItem icon="menu_book" label="คอร์สเรียน" href="#" />
+                    <SidebarItem icon="settings" label="ตั้งค่า" href="#" />
                 </nav>
 
                 <div className="p-4 border-t border-gray-100">
-                    <button className="flex items-center gap-3 w-full p-3 rounded-lg text-text-sub hover:text-secondary hover:bg-red-50 transition-colors">
-                        <MaterialIcon name="logout" className="text-xl" />
-                        <span className="font-medium">ออกจากระบบ</span>
-                    </button>
+                    <form action={logout}>
+                        <button type="submit" className="flex items-center gap-3 w-full p-3 rounded-lg text-text-sub hover:text-secondary hover:bg-red-50 transition-colors">
+                            <MaterialIcon name="logout" className="text-xl" />
+                            <span className="font-medium">ออกจากระบบ</span>
+                        </button>
+                    </form>
                 </div>
             </aside>
 
@@ -44,10 +65,13 @@ export default function AdminLayout({
                         <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-text-sub">
                             <MaterialIcon name="notifications" className="text-xl" />
                         </button>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-primary-dark p-0.5">
-                            <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                <span className="text-xs font-bold text-primary">A</span>
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-primary-dark p-0.5">
+                                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                                    <span className="text-xs font-bold text-primary">{initial}</span>
+                                </div>
                             </div>
+                            <span className="text-sm font-medium text-text-main hidden lg:block">{displayName}</span>
                         </div>
                     </div>
                 </header>
@@ -61,9 +85,9 @@ export default function AdminLayout({
     )
 }
 
-function SidebarItem({ icon, label, active = false }: { icon: string; label: string; active?: boolean }) {
+function SidebarItem({ icon, label, href, active = false }: { icon: string; label: string; href: string; active?: boolean }) {
     return (
-        <Link href="#" className={`flex items-center gap-3 p-3 rounded-xl transition-all ${active ? 'bg-primary/10 text-primary font-bold border border-primary/20' : 'text-text-sub hover:text-primary hover:bg-primary/5 border border-transparent font-medium'}`}>
+        <Link href={href} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${active ? 'bg-primary/10 text-primary font-bold border border-primary/20' : 'text-text-sub hover:text-primary hover:bg-primary/5 border border-transparent font-medium'}`}>
             <MaterialIcon name={icon} className={`text-xl ${active ? 'fill-1' : ''}`} />
             <span>{label}</span>
             {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary"></div>}
