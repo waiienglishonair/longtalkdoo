@@ -22,15 +22,15 @@ export default async function AdminUsersPage({
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const { data: currentProfile } = await supabase
+    const adminClient = createAdminClient()
+
+    const { data: currentProfile } = await adminClient
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single()
 
     if (currentProfile?.role !== 'admin') redirect('/')
-
-    const adminClient = createAdminClient()
 
     let query = adminClient
         .from('profiles')
