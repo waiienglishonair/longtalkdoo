@@ -123,6 +123,13 @@ export async function updateCourse(formData: FormData) {
     const durationHours = formData.get('duration_hours') ? parseFloat(formData.get('duration_hours') as string) : null
     const totalLessons = parseInt(formData.get('total_lessons') as string) || 0
     const categoryId = formData.get('category_id') as string || null
+    const instructorName = formData.get('instructor_name') as string || null
+    const instructorBio = formData.get('instructor_bio') as string || null
+    const instructorImage = formData.get('instructor_image') as string || null
+    const prerequisites = formData.get('prerequisites') as string || null
+    const whatYouLearn = formData.get('what_you_learn') as string || null
+    const hasCertificate = formData.get('has_certificate') === 'on'
+    const certificateTemplate = formData.get('certificate_template') as string || null
 
     const { data: currentCourse } = await supabase
         .from('courses')
@@ -157,6 +164,13 @@ export async function updateCourse(formData: FormData) {
             duration_hours: durationHours,
             total_lessons: totalLessons,
             published_at: publishedAt,
+            instructor_name: instructorName,
+            instructor_bio: instructorBio,
+            instructor_image: instructorImage,
+            prerequisites,
+            what_you_learn: whatYouLearn,
+            has_certificate: hasCertificate,
+            certificate_template: certificateTemplate,
         })
         .eq('id', courseId)
 
@@ -263,4 +277,302 @@ export async function createCategory(formData: FormData) {
     }
 
     revalidatePath('/admin/courses')
+}
+
+// ============================================
+// Section CRUD
+// ============================================
+
+export async function createSection(formData: FormData) {
+    const supabase = createAdminClient()
+    const courseId = formData.get('course_id') as string
+    const title = formData.get('title') as string
+    const description = formData.get('description') as string || null
+
+    const { data: maxOrder } = await supabase
+        .from('course_sections')
+        .select('sort_order')
+        .eq('course_id', courseId)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .single()
+
+    const sortOrder = (maxOrder?.sort_order ?? -1) + 1
+
+    const { error } = await supabase
+        .from('course_sections')
+        .insert({ course_id: courseId, title, description, sort_order: sortOrder })
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/curriculum`)
+}
+
+export async function updateSection(formData: FormData) {
+    const supabase = createAdminClient()
+    const sectionId = formData.get('section_id') as string
+    const courseId = formData.get('course_id') as string
+    const title = formData.get('title') as string
+    const description = formData.get('description') as string || null
+
+    const { error } = await supabase
+        .from('course_sections')
+        .update({ title, description })
+        .eq('id', sectionId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/curriculum`)
+}
+
+export async function deleteSection(formData: FormData) {
+    const supabase = createAdminClient()
+    const sectionId = formData.get('section_id') as string
+    const courseId = formData.get('course_id') as string
+
+    const { error } = await supabase
+        .from('course_sections')
+        .delete()
+        .eq('id', sectionId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/curriculum`)
+}
+
+// ============================================
+// Lesson CRUD
+// ============================================
+
+export async function createLesson(formData: FormData) {
+    const supabase = createAdminClient()
+    const sectionId = formData.get('section_id') as string
+    const courseId = formData.get('course_id') as string
+    const title = formData.get('title') as string
+    const lessonType = formData.get('lesson_type') as string || 'video'
+    const contentUrl = formData.get('content_url') as string || null
+    const contentText = formData.get('content_text') as string || null
+    const durationMinutes = parseInt(formData.get('duration_minutes') as string) || 0
+    const isPreview = formData.get('is_preview') === 'on'
+    const isRequired = formData.get('is_required') !== 'off'
+
+    const { data: maxOrder } = await supabase
+        .from('course_lessons')
+        .select('sort_order')
+        .eq('section_id', sectionId)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .single()
+
+    const sortOrder = (maxOrder?.sort_order ?? -1) + 1
+
+    const { error } = await supabase
+        .from('course_lessons')
+        .insert({
+            section_id: sectionId,
+            course_id: courseId,
+            title,
+            lesson_type: lessonType,
+            content_url: contentUrl,
+            content_text: contentText,
+            duration_minutes: durationMinutes,
+            is_preview: isPreview,
+            is_required: isRequired,
+            sort_order: sortOrder,
+        })
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/curriculum`)
+}
+
+export async function updateLesson(formData: FormData) {
+    const supabase = createAdminClient()
+    const lessonId = formData.get('lesson_id') as string
+    const courseId = formData.get('course_id') as string
+    const title = formData.get('title') as string
+    const lessonType = formData.get('lesson_type') as string || 'video'
+    const contentUrl = formData.get('content_url') as string || null
+    const contentText = formData.get('content_text') as string || null
+    const durationMinutes = parseInt(formData.get('duration_minutes') as string) || 0
+    const isPreview = formData.get('is_preview') === 'on'
+    const isRequired = formData.get('is_required') !== 'off'
+
+    const { error } = await supabase
+        .from('course_lessons')
+        .update({
+            title,
+            lesson_type: lessonType,
+            content_url: contentUrl,
+            content_text: contentText,
+            duration_minutes: durationMinutes,
+            is_preview: isPreview,
+            is_required: isRequired,
+        })
+        .eq('id', lessonId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/curriculum`)
+}
+
+export async function deleteLesson(formData: FormData) {
+    const supabase = createAdminClient()
+    const lessonId = formData.get('lesson_id') as string
+    const courseId = formData.get('course_id') as string
+
+    const { error } = await supabase
+        .from('course_lessons')
+        .delete()
+        .eq('id', lessonId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/curriculum`)
+}
+
+// ============================================
+// Quiz CRUD
+// ============================================
+
+export async function createQuiz(formData: FormData) {
+    const supabase = createAdminClient()
+    const courseId = formData.get('course_id') as string
+    const sectionId = formData.get('section_id') as string || null
+    const title = formData.get('title') as string
+    const description = formData.get('description') as string || null
+    const passingScore = parseInt(formData.get('passing_score') as string) || 80
+    const maxAttempts = parseInt(formData.get('max_attempts') as string) || 0
+    const timeLimitMinutes = formData.get('time_limit_minutes') ? parseInt(formData.get('time_limit_minutes') as string) : null
+    const isRequired = formData.get('is_required') !== 'off'
+
+    const { data: maxOrder } = await supabase
+        .from('quizzes')
+        .select('sort_order')
+        .eq('course_id', courseId)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .single()
+
+    const sortOrder = (maxOrder?.sort_order ?? -1) + 1
+
+    const { error } = await supabase
+        .from('quizzes')
+        .insert({
+            course_id: courseId,
+            section_id: sectionId || null,
+            title,
+            description,
+            passing_score: passingScore,
+            max_attempts: maxAttempts,
+            time_limit_minutes: timeLimitMinutes,
+            is_required: isRequired,
+            sort_order: sortOrder,
+        })
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/quizzes`)
+}
+
+export async function updateQuiz(formData: FormData) {
+    const supabase = createAdminClient()
+    const quizId = formData.get('quiz_id') as string
+    const courseId = formData.get('course_id') as string
+    const sectionId = formData.get('section_id') as string || null
+    const title = formData.get('title') as string
+    const description = formData.get('description') as string || null
+    const passingScore = parseInt(formData.get('passing_score') as string) || 80
+    const maxAttempts = parseInt(formData.get('max_attempts') as string) || 0
+    const timeLimitMinutes = formData.get('time_limit_minutes') ? parseInt(formData.get('time_limit_minutes') as string) : null
+    const isRequired = formData.get('is_required') !== 'off'
+
+    const { error } = await supabase
+        .from('quizzes')
+        .update({
+            section_id: sectionId || null,
+            title,
+            description,
+            passing_score: passingScore,
+            max_attempts: maxAttempts,
+            time_limit_minutes: timeLimitMinutes,
+            is_required: isRequired,
+        })
+        .eq('id', quizId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/quizzes`)
+}
+
+export async function deleteQuiz(formData: FormData) {
+    const supabase = createAdminClient()
+    const quizId = formData.get('quiz_id') as string
+    const courseId = formData.get('course_id') as string
+
+    const { error } = await supabase
+        .from('quizzes')
+        .delete()
+        .eq('id', quizId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/quizzes`)
+}
+
+// ============================================
+// Quiz Question CRUD
+// ============================================
+
+export async function createQuizQuestion(formData: FormData) {
+    const supabase = createAdminClient()
+    const quizId = formData.get('quiz_id') as string
+    const courseId = formData.get('course_id') as string
+    const questionText = formData.get('question_text') as string
+    const questionType = formData.get('question_type') as string || 'multiple_choice'
+    const correctAnswer = formData.get('correct_answer') as string
+    const explanation = formData.get('explanation') as string || null
+    const points = parseInt(formData.get('points') as string) || 1
+
+    let options = null
+    if (questionType === 'multiple_choice') {
+        const optionA = formData.get('option_a') as string || ''
+        const optionB = formData.get('option_b') as string || ''
+        const optionC = formData.get('option_c') as string || ''
+        const optionD = formData.get('option_d') as string || ''
+        options = [optionA, optionB, optionC, optionD].filter(Boolean)
+    } else if (questionType === 'true_false') {
+        options = ['จริง', 'ไม่จริง']
+    }
+
+    const { data: maxOrder } = await supabase
+        .from('quiz_questions')
+        .select('sort_order')
+        .eq('quiz_id', quizId)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .single()
+
+    const sortOrder = (maxOrder?.sort_order ?? -1) + 1
+
+    const { error } = await supabase
+        .from('quiz_questions')
+        .insert({
+            quiz_id: quizId,
+            question_text: questionText,
+            question_type: questionType,
+            options,
+            correct_answer: correctAnswer,
+            explanation,
+            points,
+            sort_order: sortOrder,
+        })
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/quizzes`)
+}
+
+export async function deleteQuizQuestion(formData: FormData) {
+    const supabase = createAdminClient()
+    const questionId = formData.get('question_id') as string
+    const courseId = formData.get('course_id') as string
+
+    const { error } = await supabase
+        .from('quiz_questions')
+        .delete()
+        .eq('id', questionId)
+
+    if (error) throw new Error(error.message)
+    revalidatePath(`/admin/courses/${courseId}/quizzes`)
 }

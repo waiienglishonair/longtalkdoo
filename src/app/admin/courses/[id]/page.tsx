@@ -37,6 +37,16 @@ export default async function EditCoursePage({
         .select('*', { count: 'exact', head: true })
         .eq('course_id', id)
 
+    const { count: sectionCount } = await supabase
+        .from('course_sections')
+        .select('*', { count: 'exact', head: true })
+        .eq('course_id', id)
+
+    const { count: quizCount } = await supabase
+        .from('quizzes')
+        .select('*', { count: 'exact', head: true })
+        .eq('course_id', id)
+
     const currentCategoryId = (course.course_categories as { category_id: string }[])?.[0]?.category_id || ''
     const currentTags = (course.course_tag_map as { course_tags: { name: string } | null }[])
         ?.map(t => t.course_tags?.name)
@@ -64,6 +74,21 @@ export default async function EditCoursePage({
                 </div>
             </div>
 
+            {/* Tab Navigation */}
+            <div className="flex border-b border-gray-200">
+                <Link href={`/admin/courses/${id}`} className="px-5 py-3 text-sm font-bold text-primary border-b-2 border-primary">
+                    ข้อมูลคอร์ส
+                </Link>
+                <Link href={`/admin/courses/${id}/curriculum`} className="px-5 py-3 text-sm font-medium text-text-sub border-b-2 border-transparent hover:text-primary transition-colors flex items-center gap-1.5">
+                    เนื้อหา
+                    <span className="text-[10px] bg-gray-100 text-text-sub px-1.5 py-0.5 rounded-full">{sectionCount || 0}</span>
+                </Link>
+                <Link href={`/admin/courses/${id}/quizzes`} className="px-5 py-3 text-sm font-medium text-text-sub border-b-2 border-transparent hover:text-primary transition-colors flex items-center gap-1.5">
+                    แบบทดสอบ
+                    <span className="text-[10px] bg-gray-100 text-text-sub px-1.5 py-0.5 rounded-full">{quizCount || 0}</span>
+                </Link>
+            </div>
+
             <form action={updateCourse}>
                 <input type="hidden" name="course_id" value={course.id} />
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -80,6 +105,29 @@ export default async function EditCoursePage({
                             </FormField>
                             <FormField label="รายละเอียด">
                                 <textarea name="description" rows={5} defaultValue={course.description || ''} className="form-input resize-y" />
+                            </FormField>
+                        </FormSection>
+
+                        <FormSection title="ผู้สอน" icon="person">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <FormField label="ชื่อผู้สอน">
+                                    <input type="text" name="instructor_name" defaultValue={course.instructor_name || ''} placeholder="เช่น อ.สมชาย" className="form-input" />
+                                </FormField>
+                                <FormField label="รูปผู้สอน (URL)">
+                                    <input type="url" name="instructor_image" defaultValue={course.instructor_image || ''} placeholder="https://..." className="form-input" />
+                                </FormField>
+                            </div>
+                            <FormField label="ประวัติผู้สอน">
+                                <textarea name="instructor_bio" rows={3} defaultValue={course.instructor_bio || ''} placeholder="ประสบการณ์ ความเชี่ยวชาญ..." className="form-input resize-y" />
+                            </FormField>
+                        </FormSection>
+
+                        <FormSection title="ข้อกำหนด & สิ่งที่ได้เรียน" icon="checklist">
+                            <FormField label="ข้อกำหนดเบื้องต้น (Prerequisites)">
+                                <textarea name="prerequisites" rows={3} defaultValue={course.prerequisites || ''} placeholder="- มีพื้นฐาน HTML/CSS&#10;- เข้าใจ JavaScript เบื้องต้น" className="form-input resize-y" />
+                            </FormField>
+                            <FormField label="สิ่งที่จะได้เรียนรู้ (What you'll learn)">
+                                <textarea name="what_you_learn" rows={3} defaultValue={course.what_you_learn || ''} placeholder="- เข้าใจหลักการ Prompt Engineering&#10;- ใช้ AI ช่วยเขียนโค้ด" className="form-input resize-y" />
                             </FormField>
                         </FormSection>
 
@@ -172,6 +220,16 @@ export default async function EditCoursePage({
                                     })}
                                 </p>
                             )}
+                        </FormSection>
+
+                        <FormSection title="ใบรับรอง" icon="workspace_premium">
+                            <div className="flex items-center gap-3 mb-3">
+                                <input type="checkbox" name="has_certificate" id="has_certificate" defaultChecked={course.has_certificate} className="w-4 h-4 accent-primary rounded" />
+                                <label htmlFor="has_certificate" className="text-sm text-text-sub">🎓 มีวุฒิบัตร</label>
+                            </div>
+                            <FormField label="Template URL">
+                                <input type="url" name="certificate_template" defaultValue={course.certificate_template || ''} placeholder="https://..." className="form-input" />
+                            </FormField>
                         </FormSection>
 
                         <FormSection title="รูปภาพหลัก" icon="image">
