@@ -44,7 +44,7 @@ export default async function AdminLayout({
                 <nav className="flex-1 overflow-y-auto p-4 space-y-1">
                     <SidebarItem icon="dashboard" label="ภาพรวม" href="/admin" />
                     <SidebarItem icon="group" label="ผู้ใช้" href="/admin/users" />
-                    <SidebarItem icon="menu_book" label="คอร์สเรียน" href="#" />
+                    <SidebarItem icon="menu_book" label="คอร์สเรียน" href="/admin/courses" />
                     <SidebarItem icon="settings" label="ตั้งค่า" href="#" />
                 </nav>
 
