@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import HeaderAuth from '@/app/components/HeaderAuth'
+import MobileMenu from '@/app/components/MobileMenu'
 import { createClient } from '@/utils/supabase/server'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -27,9 +28,12 @@ export default async function InstructorsArchivePage() {
                 {/* ─── HEADER ─── */}
                 <header className="sticky top-0 z-50 bg-primary text-white shadow-md">
                     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between">
-                        <button className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors lg:hidden">
-                            <MaterialIcon name="menu" />
-                        </button>
+                        <MobileMenu links={[
+                            { href: '/', label: 'หน้าแรก' },
+                            { href: '#', label: 'คอร์สเรียน' },
+                            { href: '/instructors', label: 'ผู้สอน', active: true },
+                            { href: '#', label: 'เกี่ยวกับเรา' },
+                        ]} />
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center transform -rotate-3 shadow-sm">
                                 <span className="text-primary font-[var(--font-brand)] text-lg font-bold">L</span>

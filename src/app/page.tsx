@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import HeaderAuth from '@/app/components/HeaderAuth'
+import MobileMenu from '@/app/components/MobileMenu'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
   return <span className={`material-symbols-outlined ${className}`}>{name}</span>
@@ -17,9 +18,13 @@ export default function HomePage() {
         <header className="sticky top-0 z-50 bg-primary text-white shadow-md">
           <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between">
             {/* Mobile: hamburger */}
-            <button className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors lg:hidden">
-              <MaterialIcon name="menu" />
-            </button>
+            <MobileMenu links={[
+              { href: '/', label: 'หน้าแรก', active: true },
+              { href: '#', label: 'คอร์สเรียน' },
+              { href: '/instructors', label: 'ผู้สอน' },
+              { href: '#', label: 'ร้านค้า' },
+              { href: '#', label: 'เกี่ยวกับเรา' },
+            ]} />
 
             {/* Logo */}
             <div className="flex items-center gap-2">
