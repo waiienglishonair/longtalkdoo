@@ -31,8 +31,9 @@ export default function HomePage() {
 
             {/* Desktop nav links */}
             <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
-              <Link href="#" className="text-white/90 hover:text-white transition-colors border-b-2 border-white pb-0.5">หน้าแรก</Link>
+              <Link href="/" className="text-white/90 hover:text-white transition-colors border-b-2 border-white pb-0.5">หน้าแรก</Link>
               <Link href="#" className="text-white/70 hover:text-white transition-colors">คอร์สเรียน</Link>
+              <Link href="/instructors" className="text-white/70 hover:text-white transition-colors">ผู้สอน</Link>
               <Link href="#" className="text-white/70 hover:text-white transition-colors">ร้านค้า</Link>
               <Link href="#" className="text-white/70 hover:text-white transition-colors">เกี่ยวกับเรา</Link>
             </nav>
