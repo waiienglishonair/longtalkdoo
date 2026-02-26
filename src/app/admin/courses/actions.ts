@@ -32,8 +32,9 @@ export async function createCourse(formData: FormData) {
 
     // New LMS fields
     const accessDurationValue = parseInt(formData.get('access_duration_value') as string) || 0
-    const accessDurationUnit = formData.get('access_duration_unit') as string || 'lifetime'
-    const blockContent = formData.get('block_content') as string || 'on_expiry'
+    const accessDurationUnit = formData.get('access_duration_unit') as string || 'day'
+    const blockOnExpiry = formData.get('block_on_expiry') === 'on'
+    const blockOnCompletion = formData.get('block_on_completion') === 'on'
     const allowRepurchase = formData.get('allow_repurchase') === 'on'
     const repurchaseAction = formData.get('repurchase_action') as string || 'reset_progress'
     const fakeStudentsEnrolled = parseInt(formData.get('fake_students_enrolled') as string) || 0
@@ -64,7 +65,8 @@ export async function createCourse(formData: FormData) {
             instructor_id: instructorId || null,
             access_duration_value: accessDurationValue,
             access_duration_unit: accessDurationUnit,
-            block_content: blockContent,
+            block_on_expiry: blockOnExpiry,
+            block_on_completion: blockOnCompletion,
             allow_repurchase: allowRepurchase,
             repurchase_action: repurchaseAction,
             fake_students_enrolled: fakeStudentsEnrolled,
@@ -137,8 +139,9 @@ export async function updateCourse(formData: FormData) {
 
     // LMS fields
     const accessDurationValue = parseInt(formData.get('access_duration_value') as string) || 0
-    const accessDurationUnit = formData.get('access_duration_unit') as string || 'lifetime'
-    const blockContent = formData.get('block_content') as string || 'on_expiry'
+    const accessDurationUnit = formData.get('access_duration_unit') as string || 'day'
+    const blockOnExpiry = formData.get('block_on_expiry') === 'on'
+    const blockOnCompletion = formData.get('block_on_completion') === 'on'
     const allowRepurchase = formData.get('allow_repurchase') === 'on'
     const repurchaseAction = formData.get('repurchase_action') as string || 'reset_progress'
     const fakeStudentsEnrolled = parseInt(formData.get('fake_students_enrolled') as string) || 0
@@ -183,7 +186,8 @@ export async function updateCourse(formData: FormData) {
             instructor_id: instructorId || null,
             access_duration_value: accessDurationValue,
             access_duration_unit: accessDurationUnit,
-            block_content: blockContent,
+            block_on_expiry: blockOnExpiry,
+            block_on_completion: blockOnCompletion,
             allow_repurchase: allowRepurchase,
             repurchase_action: repurchaseAction,
             fake_students_enrolled: fakeStudentsEnrolled,
