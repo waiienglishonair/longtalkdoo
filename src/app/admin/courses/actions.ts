@@ -19,23 +19,33 @@ export async function createCourse(formData: FormData) {
     const name = formData.get('name') as string
     const slug = (formData.get('slug') as string) || generateSlug(name)
     const description = formData.get('description') as string || null
-    const shortDescription = formData.get('short_description') as string || null
     const status = formData.get('status') as string || 'draft'
-    const productType = formData.get('product_type') as string || 'simple'
     const price = parseFloat(formData.get('price') as string) || 0
     const salePrice = formData.get('sale_price') ? parseFloat(formData.get('sale_price') as string) : null
     const saleStart = formData.get('sale_start') as string || null
     const saleEnd = formData.get('sale_end') as string || null
-    const sku = formData.get('sku') as string || null
-    const manageStock = formData.get('manage_stock') === 'on'
-    const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
     const featuredImage = formData.get('featured_image') as string || null
     const isFeatured = formData.get('is_featured') === 'on'
-    const visibility = formData.get('visibility') as string || 'visible'
     const difficultyLevel = formData.get('difficulty_level') as string || 'beginner'
-    const durationHours = formData.get('duration_hours') ? parseFloat(formData.get('duration_hours') as string) : null
-    const totalLessons = parseInt(formData.get('total_lessons') as string) || 0
     const categoryId = formData.get('category_id') as string || null
+    const instructorId = formData.get('instructor_id') as string || null
+
+    // New LMS fields
+    const accessDurationValue = parseInt(formData.get('access_duration_value') as string) || 0
+    const accessDurationUnit = formData.get('access_duration_unit') as string || 'lifetime'
+    const blockContent = formData.get('block_content') as string || 'on_expiry'
+    const allowRepurchase = formData.get('allow_repurchase') === 'on'
+    const repurchaseAction = formData.get('repurchase_action') as string || 'reset_progress'
+    const fakeStudentsEnrolled = parseInt(formData.get('fake_students_enrolled') as string) || 0
+    const maxStudents = parseInt(formData.get('max_students') as string) || 0
+    const retakeCount = parseInt(formData.get('retake_count') as string) || 0
+    const showFinishButton = formData.get('show_finish_button') === 'on'
+    const courseFeatures = formData.get('course_features') as string || null
+    const enableReviews = formData.get('enable_reviews') === 'on'
+    const mediaIntro = formData.get('media_intro') as string || null
+    const noEnrollRequirement = formData.get('no_enroll_requirement') === 'on'
+    const evaluationMethod = formData.get('evaluation_method') as string || 'lessons'
+    const passingGrade = parseFloat(formData.get('passing_grade') as string) || 0
 
     const { data: course, error } = await supabase
         .from('courses')
@@ -43,22 +53,30 @@ export async function createCourse(formData: FormData) {
             name,
             slug,
             description,
-            short_description: shortDescription,
             status,
-            product_type: productType,
             price,
             sale_price: salePrice,
             sale_start: saleStart || null,
             sale_end: saleEnd || null,
-            sku,
-            manage_stock: manageStock,
-            stock_quantity: stockQuantity,
             featured_image: featuredImage,
             is_featured: isFeatured,
-            visibility,
             difficulty_level: difficultyLevel,
-            duration_hours: durationHours,
-            total_lessons: totalLessons,
+            instructor_id: instructorId || null,
+            access_duration_value: accessDurationValue,
+            access_duration_unit: accessDurationUnit,
+            block_content: blockContent,
+            allow_repurchase: allowRepurchase,
+            repurchase_action: repurchaseAction,
+            fake_students_enrolled: fakeStudentsEnrolled,
+            max_students: maxStudents,
+            retake_count: retakeCount,
+            show_finish_button: showFinishButton,
+            course_features: courseFeatures,
+            enable_reviews: enableReviews,
+            media_intro: mediaIntro,
+            no_enroll_requirement: noEnrollRequirement,
+            evaluation_method: evaluationMethod,
+            passing_grade: passingGrade,
             published_at: status === 'published' ? new Date().toISOString() : null,
         })
         .select()
@@ -106,26 +124,33 @@ export async function updateCourse(formData: FormData) {
     const name = formData.get('name') as string
     const slug = (formData.get('slug') as string) || generateSlug(name)
     const description = formData.get('description') as string || null
-    const shortDescription = formData.get('short_description') as string || null
     const status = formData.get('status') as string || 'draft'
-    const productType = formData.get('product_type') as string || 'simple'
     const price = parseFloat(formData.get('price') as string) || 0
     const salePrice = formData.get('sale_price') ? parseFloat(formData.get('sale_price') as string) : null
     const saleStart = formData.get('sale_start') as string || null
     const saleEnd = formData.get('sale_end') as string || null
-    const sku = formData.get('sku') as string || null
-    const manageStock = formData.get('manage_stock') === 'on'
-    const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
     const featuredImage = formData.get('featured_image') as string || null
     const isFeatured = formData.get('is_featured') === 'on'
-    const visibility = formData.get('visibility') as string || 'visible'
     const difficultyLevel = formData.get('difficulty_level') as string || 'beginner'
-    const durationHours = formData.get('duration_hours') ? parseFloat(formData.get('duration_hours') as string) : null
-    const totalLessons = parseInt(formData.get('total_lessons') as string) || 0
     const categoryId = formData.get('category_id') as string || null
-    const instructorName = formData.get('instructor_name') as string || null
-    const instructorBio = formData.get('instructor_bio') as string || null
-    const instructorImage = formData.get('instructor_image') as string || null
+    const instructorId = formData.get('instructor_id') as string || null
+
+    // LMS fields
+    const accessDurationValue = parseInt(formData.get('access_duration_value') as string) || 0
+    const accessDurationUnit = formData.get('access_duration_unit') as string || 'lifetime'
+    const blockContent = formData.get('block_content') as string || 'on_expiry'
+    const allowRepurchase = formData.get('allow_repurchase') === 'on'
+    const repurchaseAction = formData.get('repurchase_action') as string || 'reset_progress'
+    const fakeStudentsEnrolled = parseInt(formData.get('fake_students_enrolled') as string) || 0
+    const maxStudents = parseInt(formData.get('max_students') as string) || 0
+    const retakeCount = parseInt(formData.get('retake_count') as string) || 0
+    const showFinishButton = formData.get('show_finish_button') === 'on'
+    const courseFeatures = formData.get('course_features') as string || null
+    const enableReviews = formData.get('enable_reviews') === 'on'
+    const mediaIntro = formData.get('media_intro') as string || null
+    const noEnrollRequirement = formData.get('no_enroll_requirement') === 'on'
+    const evaluationMethod = formData.get('evaluation_method') as string || 'lessons'
+    const passingGrade = parseFloat(formData.get('passing_grade') as string) || 0
     const prerequisites = formData.get('prerequisites') as string || null
     const whatYouLearn = formData.get('what_you_learn') as string || null
     const hasCertificate = formData.get('has_certificate') === 'on'
@@ -147,26 +172,31 @@ export async function updateCourse(formData: FormData) {
             name,
             slug,
             description,
-            short_description: shortDescription,
             status,
-            product_type: productType,
             price,
             sale_price: salePrice,
             sale_start: saleStart || null,
             sale_end: saleEnd || null,
-            sku,
-            manage_stock: manageStock,
-            stock_quantity: stockQuantity,
             featured_image: featuredImage,
             is_featured: isFeatured,
-            visibility,
             difficulty_level: difficultyLevel,
-            duration_hours: durationHours,
-            total_lessons: totalLessons,
+            instructor_id: instructorId || null,
+            access_duration_value: accessDurationValue,
+            access_duration_unit: accessDurationUnit,
+            block_content: blockContent,
+            allow_repurchase: allowRepurchase,
+            repurchase_action: repurchaseAction,
+            fake_students_enrolled: fakeStudentsEnrolled,
+            max_students: maxStudents,
+            retake_count: retakeCount,
+            show_finish_button: showFinishButton,
+            course_features: courseFeatures,
+            enable_reviews: enableReviews,
+            media_intro: mediaIntro,
+            no_enroll_requirement: noEnrollRequirement,
+            evaluation_method: evaluationMethod,
+            passing_grade: passingGrade,
             published_at: publishedAt,
-            instructor_name: instructorName,
-            instructor_bio: instructorBio,
-            instructor_image: instructorImage,
             prerequisites,
             what_you_learn: whatYouLearn,
             has_certificate: hasCertificate,
