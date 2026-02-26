@@ -284,21 +284,19 @@ export default function CourseForm({
                             <input type="number" name="passing_grade" min="0" max="100" step="0.01" defaultValue={course?.passing_grade || 80} className="form-input" />
                             <p className="text-[10px] text-text-sub mt-1">ตัวอย่าง: หากมี 20 ข้อ และตั้ง 80% → ต้องได้ 16 คะแนนขึ้นไป</p>
                         </FormField>
-                        <FormField label="วิธีประเมิน">
-                            <select name="evaluation_method" defaultValue={course?.evaluation_method || 'lessons'} className="form-input">
-                                <option value="lessons">ประเมินจากบทเรียน (Evaluate via lessons)</option>
-                                <option value="final_quiz">ประเมินจากแบบทดสอบปลายภาค (Final quiz)</option>
-                                <option value="passed_quizzes">ประเมินจากแบบทดสอบที่ผ่าน (Passed quizzes)</option>
-                                <option value="questions">ประเมินจากคำถาม (Questions)</option>
-                                <option value="mark">ประเมินจากเครื่องหมาย (Mark)</option>
-                            </select>
-                        </FormField>
                     </FormSection>
 
                     {/* ─── Curriculum ─── */}
-                    {(createSection || course) && (
+                    {course && (
                         <FormSection title="หลักสูตร (Curriculum)" icon="menu_book">
                             <p className="text-xs text-text-sub mb-3">{sections.length} บท · {lessons.length} บทเรียน · {quizzes.length} แบบทดสอบ</p>
+
+                            {sections.length === 0 && (
+                                <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-xl">
+                                    <MaterialIcon name="school" className="text-4xl text-gray-300 mb-2" />
+                                    <p className="text-sm text-text-sub">ยังไม่มีบท — เพิ่มบทแรกด้านล่าง</p>
+                                </div>
+                            )}
 
                             <div className="space-y-3">
                                 {sections.sort((a, b) => a.sort_order - b.sort_order).map(section => {
