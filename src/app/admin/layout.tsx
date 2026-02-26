@@ -45,6 +45,7 @@ export default async function AdminLayout({
                     <SidebarItem icon="dashboard" label="ภาพรวม" href="/admin" />
                     <SidebarItem icon="group" label="ผู้ใช้" href="/admin/users" />
                     <SidebarItem icon="menu_book" label="คอร์สเรียน" href="/admin/courses" />
+                    <SidebarItem icon="school" label="ผู้สอน" href="/admin/instructors" />
                     <SidebarItem icon="settings" label="ตั้งค่า" href="#" />
                 </nav>
 
