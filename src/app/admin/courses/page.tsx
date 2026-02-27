@@ -31,7 +31,7 @@ export default async function AdminCoursesPage({
     }
 
     if (searchQuery) {
-        query = query.or(`name.ilike.%${searchQuery}%,sku.ilike.%${searchQuery}%`)
+        query = query.ilike('name', `%${searchQuery}%`)
     }
 
     const { data: courses, error } = await query
@@ -95,7 +95,7 @@ export default async function AdminCoursesPage({
                                 type="text"
                                 name="search"
                                 defaultValue={searchQuery}
-                                placeholder="ค้นหาคอร์ส, SKU..."
+                                placeholder="ค้นหาคอร์ส..."
                                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
                         </div>
@@ -110,7 +110,6 @@ export default async function AdminCoursesPage({
                         <thead className="text-[11px] uppercase text-text-sub tracking-wider bg-gray-50 border-b border-gray-100">
                             <tr>
                                 <th scope="col" className="px-6 py-4">คอร์ส</th>
-                                <th scope="col" className="px-6 py-4">SKU</th>
                                 <th scope="col" className="px-6 py-4">ราคา</th>
                                 <th scope="col" className="px-6 py-4">หมวดหมู่</th>
                                 <th scope="col" className="px-6 py-4">สถานะ</th>
@@ -151,7 +150,6 @@ export default async function AdminCoursesPage({
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-xs font-mono text-text-sub">{course.sku || '-'}</td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
                                                     {hasActiveSale ? (
@@ -222,7 +220,7 @@ export default async function AdminCoursesPage({
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-16 text-center">
+                                    <td colSpan={7} className="px-6 py-16 text-center">
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center">
                                                 <MaterialIcon name="menu_book" className="text-3xl text-gray-400" />

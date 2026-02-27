@@ -28,6 +28,16 @@ export default async function AdminTagsPage({
 
     const { data: tags, error } = await query
 
+    // Fetch course counts per tag from join table
+    const { data: tagCounts } = await supabase
+        .from('course_tag_map')
+        .select('tag_id')
+
+    const countMap: Record<string, number> = {}
+    tagCounts?.forEach(row => {
+        countMap[row.tag_id] = (countMap[row.tag_id] || 0) + 1
+    })
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -101,6 +111,7 @@ export default async function AdminTagsPage({
                                     <thead className="bg-gray-50 text-xs uppercase text-gray-500 font-bold border-b border-gray-100">
                                         <tr>
                                             <th className="px-5 py-3.5 text-left">แท็ก</th>
+                                            <th className="px-5 py-3.5 text-center">คอร์ส</th>
                                             <th className="px-5 py-3.5 text-left">Slug</th>
                                             <th className="px-5 py-3.5 text-left">สร้างเมื่อ</th>
                                             <th className="px-5 py-3.5 text-right">จัดการ</th>
@@ -114,6 +125,16 @@ export default async function AdminTagsPage({
                                                         <MaterialIcon name="label" className="text-primary text-base" />
                                                         <span className="font-medium text-text-main">{tag.name}</span>
                                                     </div>
+                                                </td>
+                                                <td className="px-5 py-3.5 text-center">
+                                                    {(countMap[tag.id] || 0) > 0 ? (
+                                                        <span className="inline-flex items-center gap-1 text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                                            <MaterialIcon name="menu_book" className="text-[12px]" />
+                                                            {countMap[tag.id]}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-gray-300 text-xs">0</span>
+                                                    )}
                                                 </td>
                                                 <td className="px-5 py-3.5">
                                                     <span className="text-xs font-mono text-text-sub bg-gray-50 px-2 py-0.5 rounded">{tag.slug}</span>

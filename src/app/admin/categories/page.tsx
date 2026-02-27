@@ -27,6 +27,16 @@ export default async function AdminCategoriesPage({
 
     const { data: categories, error } = await query
 
+    // Fetch course counts per category from join table
+    const { data: courseCounts } = await supabase
+        .from('course_categories')
+        .select('category_id')
+
+    const countMap: Record<string, number> = {}
+    courseCounts?.forEach(row => {
+        countMap[row.category_id] = (countMap[row.category_id] || 0) + 1
+    })
+
     // Build parent lookup
     const parentMap: Record<string, string> = {}
     categories?.forEach(c => { parentMap[c.id] = c.name })
@@ -40,7 +50,7 @@ export default async function AdminCategoriesPage({
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold mb-1 text-text-main">หมวดหมู่</h1>
-                    <p className="text-text-sub text-sm">จัดการหมวดหมู่คอร์สเรียน</p>
+                    <p className="text-text-sub text-sm">จัดการหมวดหมู่คอร์สเรียน · {categories?.length || 0} หมวดหมู่</p>
                 </div>
                 <Link
                     href="/admin/categories/new"
@@ -79,6 +89,7 @@ export default async function AdminCategoriesPage({
                                 <tr>
                                     <th className="px-5 py-3.5 text-left">หมวดหมู่</th>
                                     <th className="px-5 py-3.5 text-left">ไอคอน</th>
+                                    <th className="px-5 py-3.5 text-center">คอร์ส</th>
                                     <th className="px-5 py-3.5 text-left">หมวดหมู่หลัก</th>
                                     <th className="px-5 py-3.5 text-left">Slug</th>
                                     <th className="px-5 py-3.5 text-center">ลำดับ</th>
@@ -86,29 +97,18 @@ export default async function AdminCategoriesPage({
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* Render parents first, then their children */}
                                 {parents.map(category => (
-                                    <>
-                                        <CategoryRow
-                                            key={category.id}
-                                            category={category}
-                                            parentName={null}
-                                            isChild={false}
-                                        />
-                                        {children
-                                            .filter(c => c.parent_id === category.id)
-                                            .map(child => (
-                                                <CategoryRow
-                                                    key={child.id}
-                                                    category={child}
-                                                    parentName={category.name}
-                                                    isChild={true}
-                                                />
-                                            ))
-                                        }
-                                    </>
+                                    <CategoryRows
+                                        key={category.id}
+                                        category={category}
+                                        parentName={null}
+                                        isChild={false}
+                                        courseCount={countMap[category.id] || 0}
+                                        childCategories={children.filter(c => c.parent_id === category.id)}
+                                        countMap={countMap}
+                                    />
                                 ))}
-                                {/* Orphan children (parent deleted) */}
+                                {/* Orphan children */}
                                 {children
                                     .filter(c => !parents.find(p => p.id === c.parent_id))
                                     .map(child => (
@@ -117,6 +117,7 @@ export default async function AdminCategoriesPage({
                                             category={child}
                                             parentName={parentMap[child.parent_id] || '(ลบแล้ว)'}
                                             isChild={true}
+                                            courseCount={countMap[child.id] || 0}
                                         />
                                     ))
                                 }
@@ -143,14 +144,41 @@ export default async function AdminCategoriesPage({
     )
 }
 
-function CategoryRow({
+function CategoryRows({
     category,
     parentName,
     isChild,
+    courseCount,
+    childCategories,
+    countMap,
 }: {
     category: { id: string; name: string; slug: string; image_url: string | null; sort_order: number; parent_id: string | null }
     parentName: string | null
     isChild: boolean
+    courseCount: number
+    childCategories: { id: string; name: string; slug: string; image_url: string | null; sort_order: number; parent_id: string | null }[]
+    countMap: Record<string, number>
+}) {
+    return (
+        <>
+            <CategoryRow category={category} parentName={parentName} isChild={isChild} courseCount={courseCount} />
+            {childCategories.map(child => (
+                <CategoryRow key={child.id} category={child} parentName={category.name} isChild={true} courseCount={countMap[child.id] || 0} />
+            ))}
+        </>
+    )
+}
+
+function CategoryRow({
+    category,
+    parentName,
+    isChild,
+    courseCount,
+}: {
+    category: { id: string; name: string; slug: string; image_url: string | null; sort_order: number; parent_id: string | null }
+    parentName: string | null
+    isChild: boolean
+    courseCount: number
 }) {
     return (
         <tr className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
@@ -167,6 +195,16 @@ function CategoryRow({
                     <img src={category.image_url} alt="" className="w-8 h-8 rounded-lg object-cover border border-gray-200" />
                 ) : (
                     <span className="text-gray-300 text-xs">—</span>
+                )}
+            </td>
+            <td className="px-5 py-3.5 text-center">
+                {courseCount > 0 ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                        <MaterialIcon name="menu_book" className="text-[12px]" />
+                        {courseCount}
+                    </span>
+                ) : (
+                    <span className="text-gray-300 text-xs">0</span>
                 )}
             </td>
             <td className="px-5 py-3.5">
