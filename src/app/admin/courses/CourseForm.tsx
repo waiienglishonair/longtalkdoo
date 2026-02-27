@@ -9,6 +9,7 @@ function MaterialIcon({ name, className = '' }: { name: string; className?: stri
 // ─── Types ───
 interface Instructor { id: string; name: string }
 interface Category { id: string; name: string; parent_id: string | null }
+interface Tag { id: string; name: string; slug: string }
 interface Section { id: string; title: string; description: string | null; sort_order: number }
 interface Lesson { id: string; section_id: string; title: string; lesson_type: string; sort_order: number }
 interface Quiz { id: string; section_id: string | null; title: string; sort_order: number }
@@ -19,12 +20,13 @@ interface CourseData { [key: string]: any }
 interface CourseFormProps {
     course?: CourseData | null
     categories: Category[]
+    tags: Tag[]
     instructors: Instructor[]
     sections?: Section[]
     lessons?: Lesson[]
     quizzes?: Quiz[]
-    currentCategoryId?: string
-    currentTags?: string
+    currentCategoryIds?: string[]
+    currentTagIds?: string[]
     action: (formData: FormData) => Promise<void>
     // Curriculum actions
     createSection?: (formData: FormData) => Promise<void>
@@ -38,12 +40,13 @@ interface CourseFormProps {
 export default function CourseForm({
     course,
     categories,
+    tags: availableTags,
     instructors,
     sections = [],
     lessons = [],
     quizzes = [],
-    currentCategoryId = '',
-    currentTags = '',
+    currentCategoryIds = [],
+    currentTagIds = [],
     action,
     createSection,
     deleteSection,
@@ -61,6 +64,22 @@ export default function CourseForm({
     const selectedInstructor = instructors.find(i => i.id === selectedInstructorId)
     const filteredInstructors = instructors.filter(i =>
         i.name.toLowerCase().includes(instructorSearch.toLowerCase())
+    )
+
+    // Category multi-select state
+    const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(currentCategoryIds)
+    const [categorySearch, setCategorySearch] = useState('')
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
+    const filteredCategories = categories.filter(c =>
+        c.name.toLowerCase().includes(categorySearch.toLowerCase()) && !selectedCategoryIds.includes(c.id)
+    )
+
+    // Tag multi-select state
+    const [selectedTagIds, setSelectedTagIds] = useState<string[]>(currentTagIds)
+    const [tagSearch, setTagSearch] = useState('')
+    const [showTagDropdown, setShowTagDropdown] = useState(false)
+    const filteredTags = availableTags.filter(t =>
+        t.name.toLowerCase().includes(tagSearch.toLowerCase()) && !selectedTagIds.includes(t.id)
     )
 
     // WYSIWYG ref
@@ -101,6 +120,8 @@ export default function CourseForm({
             {course && <input type="hidden" name="course_id" value={course.id} />}
             <input type="hidden" name="description" ref={descriptionInputRef} defaultValue={course?.description || ''} />
             <input type="hidden" name="instructor_id" value={selectedInstructorId} />
+            <input type="hidden" name="category_ids" value={JSON.stringify(selectedCategoryIds)} />
+            <input type="hidden" name="tag_ids" value={JSON.stringify(selectedTagIds)} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
@@ -520,21 +541,98 @@ export default function CourseForm({
                     )}
 
                     <FormSection title="หมวดหมู่" icon="category">
-                        <FormField label="เลือกหมวดหมู่">
-                            <select name="category_id" defaultValue={currentCategoryId} className="form-input">
-                                <option value="">— ไม่ระบุ —</option>
-                                {categories.map(cat => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.parent_id ? '— ' : ''}{cat.name}
-                                    </option>
-                                ))}
-                            </select>
+                        <FormField label="เลือกหมวดหมู่ (เลือกได้หลายรายการ)">
+                            <div className="relative">
+                                {/* Selected chips */}
+                                <div className="flex flex-wrap gap-1.5 mb-2">
+                                    {selectedCategoryIds.map(cid => {
+                                        const cat = categories.find(c => c.id === cid)
+                                        return cat ? (
+                                            <span key={cid} className="inline-flex items-center gap-1 text-xs font-medium bg-primary/10 text-primary px-2.5 py-1 rounded-full">
+                                                {cat.parent_id ? '└ ' : ''}{cat.name}
+                                                <button type="button" onClick={() => setSelectedCategoryIds(prev => prev.filter(id => id !== cid))} className="hover:text-red-500 transition-colors">
+                                                    <MaterialIcon name="close" className="text-xs" />
+                                                </button>
+                                            </span>
+                                        ) : null
+                                    })}
+                                </div>
+                                {/* Search input */}
+                                <div className="form-input flex items-center cursor-text" onClick={() => setShowCategoryDropdown(true)}>
+                                    <MaterialIcon name="search" className="text-gray-400 text-base mr-2" />
+                                    <input
+                                        type="text"
+                                        value={categorySearch}
+                                        onChange={e => { setCategorySearch(e.target.value); setShowCategoryDropdown(true) }}
+                                        onFocus={() => setShowCategoryDropdown(true)}
+                                        placeholder="พิมพ์ค้นหาหมวดหมู่..."
+                                        className="w-full outline-none bg-transparent text-sm"
+                                    />
+                                </div>
+                                {showCategoryDropdown && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setShowCategoryDropdown(false)} />
+                                        <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                            {filteredCategories.length > 0 ? filteredCategories.map(cat => (
+                                                <button key={cat.id} type="button" onClick={() => { setSelectedCategoryIds(prev => [...prev, cat.id]); setCategorySearch(''); setShowCategoryDropdown(false) }} className="w-full text-left px-3 py-2 text-sm hover:bg-primary/5 transition-colors text-text-main">
+                                                    {cat.parent_id ? <span className="text-gray-400 mr-1">└</span> : null}{cat.name}
+                                                </button>
+                                            )) : (
+                                                <p className="px-3 py-2 text-sm text-text-sub">ไม่พบหมวดหมู่</p>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </FormField>
                     </FormSection>
 
                     <FormSection title="แท็ก" icon="label">
-                        <FormField label="แท็ก (คั่นด้วย ,)">
-                            <input type="text" name="tags" defaultValue={currentTags} placeholder="TOEIC, ธุรกิจ, ไวยากรณ์" className="form-input" />
+                        <FormField label="เลือกแท็ก (เลือกได้หลายรายการ)">
+                            <div className="relative">
+                                {/* Selected chips */}
+                                <div className="flex flex-wrap gap-1.5 mb-2">
+                                    {selectedTagIds.map(tid => {
+                                        const tag = availableTags.find(t => t.id === tid)
+                                        return tag ? (
+                                            <span key={tid} className="inline-flex items-center gap-1 text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">
+                                                <MaterialIcon name="label" className="text-[11px]" />
+                                                {tag.name}
+                                                <button type="button" onClick={() => setSelectedTagIds(prev => prev.filter(id => id !== tid))} className="hover:text-red-500 transition-colors">
+                                                    <MaterialIcon name="close" className="text-xs" />
+                                                </button>
+                                            </span>
+                                        ) : null
+                                    })}
+                                </div>
+                                {/* Search input */}
+                                <div className="form-input flex items-center cursor-text" onClick={() => setShowTagDropdown(true)}>
+                                    <MaterialIcon name="search" className="text-gray-400 text-base mr-2" />
+                                    <input
+                                        type="text"
+                                        value={tagSearch}
+                                        onChange={e => { setTagSearch(e.target.value); setShowTagDropdown(true) }}
+                                        onFocus={() => setShowTagDropdown(true)}
+                                        placeholder="พิมพ์ค้นหาแท็ก..."
+                                        className="w-full outline-none bg-transparent text-sm"
+                                    />
+                                </div>
+                                {showTagDropdown && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setShowTagDropdown(false)} />
+                                        <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                            {filteredTags.length > 0 ? filteredTags.map(tag => (
+                                                <button key={tag.id} type="button" onClick={() => { setSelectedTagIds(prev => [...prev, tag.id]); setTagSearch(''); setShowTagDropdown(false) }} className="w-full text-left px-3 py-2 text-sm hover:bg-amber-50 transition-colors text-text-main flex items-center gap-2">
+                                                    <MaterialIcon name="label" className="text-amber-500 text-sm" />
+                                                    {tag.name}
+                                                </button>
+                                            )) : (
+                                                <p className="px-3 py-2 text-sm text-text-sub">ไม่พบแท็ก</p>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </FormField>
                     </FormSection>
 

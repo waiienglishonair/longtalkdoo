@@ -15,6 +15,11 @@ export default async function NewCoursePage() {
         .select('id, name')
         .order('name', { ascending: true })
 
+    const { data: allTags } = await supabase
+        .from('course_tags')
+        .select('id, name, slug')
+        .order('name', { ascending: true })
+
     return (
         <div className="space-y-6 max-w-5xl">
             <div className="flex items-center gap-4">
@@ -29,6 +34,7 @@ export default async function NewCoursePage() {
 
             <CourseForm
                 categories={categories || []}
+                tags={allTags || []}
                 instructors={instructors || []}
                 action={createCourse}
             />

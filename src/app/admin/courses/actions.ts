@@ -27,7 +27,7 @@ export async function createCourse(formData: FormData) {
     const featuredImage = formData.get('featured_image') as string || null
     const isFeatured = formData.get('is_featured') === 'on'
     const difficultyLevel = formData.get('difficulty_level') as string || 'beginner'
-    const categoryId = formData.get('category_id') as string || null
+    const categoryIdsRaw = formData.get('category_ids') as string || '[]'
     const instructorId = formData.get('instructor_id') as string || null
 
     // New LMS fields
@@ -89,30 +89,21 @@ export async function createCourse(formData: FormData) {
         throw new Error(error.message)
     }
 
-    // Link category if provided
-    if (categoryId && course) {
+    // Link categories
+    const categoryIds: string[] = JSON.parse(categoryIdsRaw)
+    if (categoryIds.length > 0 && course) {
         await supabase
             .from('course_categories')
-            .insert({ course_id: course.id, category_id: categoryId })
+            .insert(categoryIds.map(cid => ({ course_id: course.id, category_id: cid })))
     }
 
-    // Handle tags
-    const tagsRaw = formData.get('tags') as string
-    if (tagsRaw && course) {
-        const tagNames = tagsRaw.split(',').map(t => t.trim()).filter(Boolean)
-        for (const tagName of tagNames) {
-            const tagSlug = generateSlug(tagName)
-            const { data: tag } = await supabase
-                .from('course_tags')
-                .upsert({ name: tagName, slug: tagSlug }, { onConflict: 'slug' })
-                .select()
-                .single()
-            if (tag) {
-                await supabase
-                    .from('course_tag_map')
-                    .upsert({ course_id: course.id, tag_id: tag.id })
-            }
-        }
+    // Handle tags by IDs
+    const tagIdsRaw = formData.get('tag_ids') as string || '[]'
+    const tagIds: string[] = JSON.parse(tagIdsRaw)
+    if (tagIds.length > 0 && course) {
+        await supabase
+            .from('course_tag_map')
+            .insert(tagIds.map(tid => ({ course_id: course.id, tag_id: tid })))
     }
 
     revalidatePath('/admin/courses')
@@ -134,7 +125,7 @@ export async function updateCourse(formData: FormData) {
     const featuredImage = formData.get('featured_image') as string || null
     const isFeatured = formData.get('is_featured') === 'on'
     const difficultyLevel = formData.get('difficulty_level') as string || 'beginner'
-    const categoryId = formData.get('category_id') as string || null
+    const categoryIdsRaw = formData.get('category_ids') as string || '[]'
     const instructorId = formData.get('instructor_id') as string || null
 
     // LMS fields
@@ -218,33 +209,24 @@ export async function updateCourse(formData: FormData) {
         .delete()
         .eq('course_id', courseId)
 
-    if (categoryId) {
+    const categoryIds: string[] = JSON.parse(categoryIdsRaw)
+    if (categoryIds.length > 0) {
         await supabase
             .from('course_categories')
-            .insert({ course_id: courseId, category_id: categoryId })
+            .insert(categoryIds.map(cid => ({ course_id: courseId, category_id: cid })))
     }
 
-    const tagsRaw = formData.get('tags') as string
+    const tagIdsRaw = formData.get('tag_ids') as string || '[]'
     await supabase
         .from('course_tag_map')
         .delete()
         .eq('course_id', courseId)
 
-    if (tagsRaw) {
-        const tagNames = tagsRaw.split(',').map(t => t.trim()).filter(Boolean)
-        for (const tagName of tagNames) {
-            const tagSlug = generateSlug(tagName)
-            const { data: tag } = await supabase
-                .from('course_tags')
-                .upsert({ name: tagName, slug: tagSlug }, { onConflict: 'slug' })
-                .select()
-                .single()
-            if (tag) {
-                await supabase
-                    .from('course_tag_map')
-                    .upsert({ course_id: courseId, tag_id: tag.id })
-            }
-        }
+    const tagIds: string[] = JSON.parse(tagIdsRaw)
+    if (tagIds.length > 0) {
+        await supabase
+            .from('course_tag_map')
+            .insert(tagIds.map(tid => ({ course_id: courseId, tag_id: tid })))
     }
 
     revalidatePath('/admin/courses')

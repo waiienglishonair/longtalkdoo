@@ -38,6 +38,11 @@ export default async function EditCoursePage({
         .select('id, name')
         .order('name', { ascending: true })
 
+    const { data: allTags } = await supabase
+        .from('course_tags')
+        .select('id, name, slug')
+        .order('name', { ascending: true })
+
     const { count: enrollmentCount } = await supabase
         .from('enrollments')
         .select('*', { count: 'exact', head: true })
@@ -71,11 +76,8 @@ export default async function EditCoursePage({
         .eq('course_id', id)
         .order('sort_order', { ascending: true })
 
-    const currentCategoryId = (course.course_categories as { category_id: string }[])?.[0]?.category_id || ''
-    const currentTags = (course.course_tag_map as { course_tags: { name: string } | null }[])
-        ?.map(t => t.course_tags?.name)
-        .filter(Boolean)
-        .join(', ') || ''
+    const currentCategoryIds = (course.course_categories as { category_id: string }[])?.map(cc => cc.category_id) || []
+    const currentTagIds = (course.course_tag_map as { tag_id: string }[])?.map(t => t.tag_id) || []
 
     return (
         <div className="space-y-6 max-w-5xl">
@@ -116,12 +118,13 @@ export default async function EditCoursePage({
             <CourseForm
                 course={course}
                 categories={categories || []}
+                tags={allTags || []}
                 instructors={instructors || []}
                 sections={sectionsData || []}
                 lessons={lessonsData || []}
                 quizzes={quizzesData || []}
-                currentCategoryId={currentCategoryId}
-                currentTags={currentTags}
+                currentCategoryIds={currentCategoryIds}
+                currentTagIds={currentTagIds}
                 action={updateCourse}
                 createSection={createSection}
                 deleteSection={deleteSection}
