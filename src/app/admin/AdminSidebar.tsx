@@ -19,6 +19,8 @@ export default function AdminSidebar({ logoutAction }: SidebarProps) {
         { icon: 'group', label: 'ผู้ใช้', href: '/admin/users' },
         { icon: 'menu_book', label: 'คอร์สเรียน', href: '/admin/courses' },
         { icon: 'school', label: 'ผู้สอน', href: '/admin/instructors' },
+        { icon: 'category', label: 'หมวดหมู่', href: '/admin/categories' },
+        { icon: 'label', label: 'แท็ก', href: '/admin/tags' },
         { icon: 'settings', label: 'ตั้งค่า', href: '#' },
     ]
 
