@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import HeaderAuth from '@/app/components/HeaderAuth'
 import MobileMenu from '@/app/components/MobileMenu'
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className}`}>{name}</span>
 }
 
 export default async function InstructorsArchivePage() {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data: instructors } = await supabase
         .from('instructor_stats')

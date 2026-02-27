@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import HeaderAuth from '@/app/components/HeaderAuth'
 import MobileMenu from '@/app/components/MobileMenu'
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className}`}>{name}</span>
@@ -14,7 +14,7 @@ export default async function InstructorDetailPage({
     params: Promise<{ slug: string }>
 }) {
     const { slug } = await params
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // Fetch instructor with stats
     const { data: instructor } = await supabase
