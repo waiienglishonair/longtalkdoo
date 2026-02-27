@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/utils/supabase/admin'
-import { updateCourse, deleteCourse, createSection, deleteSection, createLesson, deleteLesson, createQuiz, deleteQuiz } from '../actions'
+import { updateCourse, deleteCourse, createSection, deleteSection, createLesson, deleteLesson, createQuiz, deleteQuiz, updateLesson, updateQuiz } from '../actions'
 import CourseForm from '../CourseForm'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
@@ -132,6 +132,8 @@ export default async function EditCoursePage({
                 deleteLesson={deleteLesson}
                 createQuiz={createQuiz}
                 deleteQuiz={deleteQuiz}
+                updateLesson={updateLesson}
+                updateQuiz={updateQuiz}
             />
 
             <div className="bg-red-50 rounded-2xl border border-red-200 p-5">

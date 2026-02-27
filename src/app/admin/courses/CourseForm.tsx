@@ -11,7 +11,7 @@ interface Instructor { id: string; name: string }
 interface Category { id: string; name: string; parent_id: string | null }
 interface Tag { id: string; name: string; slug: string }
 interface Section { id: string; title: string; description: string | null; sort_order: number }
-interface Lesson { id: string; section_id: string; title: string; lesson_type: string; sort_order: number }
+interface Lesson { id: string; section_id: string; title: string; lesson_type: string; sort_order: number; content_url?: string; duration_minutes?: number; is_preview?: boolean }
 interface Quiz { id: string; section_id: string | null; title: string; sort_order: number }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +35,8 @@ interface CourseFormProps {
     deleteLesson?: (formData: FormData) => Promise<void>
     createQuiz?: (formData: FormData) => Promise<void>
     deleteQuiz?: (formData: FormData) => Promise<void>
+    updateLesson?: (formData: FormData) => Promise<void>
+    updateQuiz?: (formData: FormData) => Promise<void>
 }
 
 export default function CourseForm({
@@ -54,6 +56,8 @@ export default function CourseForm({
     deleteLesson,
     createQuiz,
     deleteQuiz,
+    updateLesson,
+    updateQuiz,
 }: CourseFormProps) {
     // State
     const [showSaleDates, setShowSaleDates] = useState(!!(course?.sale_start || course?.sale_end))
@@ -103,6 +107,10 @@ export default function CourseForm({
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
     const [addingTo, setAddingTo] = useState<{ sectionId: string; type: 'lesson' | 'quiz' | 'attachment' } | null>(null)
     const [newItemTitle, setNewItemTitle] = useState('')
+
+    // Inline Edit State
+    const [editingLessonId, setEditingLessonId] = useState<string | null>(null)
+    const [editingQuizId, setEditingQuizId] = useState<string | null>(null)
 
     const toggleSection = (id: string) => {
         setExpandedSections(prev => ({ ...prev, [id]: !prev[id] }))
@@ -333,13 +341,23 @@ export default function CourseForm({
                                                 <span className="text-[10px] text-text-sub bg-white px-2 py-0.5 rounded-full">{items.length} items</span>
                                                 <MaterialIcon name={isExpanded ? 'expand_less' : 'expand_more'} className="text-text-sub text-lg" />
                                                 {deleteSection && (
-                                                    <form action={deleteSection} className="inline">
-                                                        <input type="hidden" name="section_id" value={section.id} />
-                                                        <input type="hidden" name="course_id" value={course?.id || ''} />
-                                                        <button type="submit" className="p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors" onClick={e => e.stopPropagation()}>
+                                                    <div className="inline">
+                                                        <button
+                                                            type="button"
+                                                            className="p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors"
+                                                            onClick={e => {
+                                                                e.stopPropagation()
+                                                                if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบบทนี้?')) {
+                                                                    const fd = new FormData()
+                                                                    fd.append('section_id', section.id)
+                                                                    if (course?.id) fd.append('course_id', course.id)
+                                                                    deleteSection(fd)
+                                                                }
+                                                            }}
+                                                        >
                                                             <MaterialIcon name="delete" className="text-base" />
                                                         </button>
-                                                    </form>
+                                                    </div>
                                                 )}
                                             </div>
                                             {section.description && isExpanded && (
@@ -352,28 +370,127 @@ export default function CourseForm({
                                                     {items.map(item => {
                                                         const typeIcon = item.lesson_type === 'quiz' ? 'quiz' : item.lesson_type === 'attachment' ? 'attach_file' : item.lesson_type === 'video' ? 'play_circle' : 'description'
                                                         const typeColor = item.lesson_type === 'quiz' ? 'text-amber-500' : item.lesson_type === 'attachment' ? 'text-gray-500' : 'text-primary'
+
+                                                        // Inline Edit UI for Lesson
+                                                        if (editingLessonId === item.id && item.itemType === 'lesson') {
+                                                            const lesson = item as unknown as Lesson
+                                                            return (
+                                                                <div key={item.id} className="p-4 bg-gray-50 border-b border-gray-100">
+                                                                    <div className="space-y-3">
+                                                                        <div className="flex gap-3">
+                                                                            <input type="text" id={`edit-title-${item.id}`} defaultValue={item.title} className="form-input flex-1 text-sm font-medium" placeholder="ชื่อบทเรียน..." />
+                                                                            <select id={`edit-type-${item.id}`} defaultValue={lesson.lesson_type} className="form-input w-40 text-sm">
+                                                                                <option value="video">🎬 วิดีโอ</option>
+                                                                                <option value="text">📄 บทความ</option>
+                                                                                <option value="assignment">📝 แบบฝึกหัด</option>
+                                                                                <option value="download">📥 ดาวน์โหลด</option>
+                                                                                <option value="attachment">📎 ไฟล์แนบ</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div className="flex gap-3">
+                                                                            <input type="text" id={`edit-url-${item.id}`} defaultValue={lesson.content_url || ''} className="form-input flex-1 text-sm font-mono" placeholder="วิดีโอ URL หรือ Embed code..." />
+                                                                            <input type="number" id={`edit-duration-${item.id}`} defaultValue={lesson.duration_minutes || ''} min="0" className="form-input w-24 text-sm" placeholder="นาที" />
+                                                                            <label className="flex items-center gap-2 text-sm text-text-main shrink-0 w-20">
+                                                                                <input type="checkbox" id={`edit-preview-${item.id}`} defaultChecked={lesson.is_preview} className="w-4 h-4 accent-primary rounded" />
+                                                                                ดูฟรี
+                                                                            </label>
+                                                                        </div>
+                                                                        <div className="flex items-center justify-end gap-2 pt-2">
+                                                                            <button type="button" onClick={() => setEditingLessonId(null)} className="px-3 py-1.5 text-xs font-medium text-text-sub hover:bg-gray-200 rounded-lg transition-colors">ยกเลิก</button>
+                                                                            <button type="button" onClick={() => {
+                                                                                if (!updateLesson) return
+                                                                                const fd = new FormData()
+                                                                                fd.append('lesson_id', item.id)
+                                                                                if (course?.id) fd.append('course_id', course.id)
+
+                                                                                const titleInput = document.getElementById(`edit-title-${item.id}`) as HTMLInputElement
+                                                                                const typeSelect = document.getElementById(`edit-type-${item.id}`) as HTMLSelectElement
+                                                                                const urlInput = document.getElementById(`edit-url-${item.id}`) as HTMLInputElement
+                                                                                const durationInput = document.getElementById(`edit-duration-${item.id}`) as HTMLInputElement
+                                                                                const previewCheck = document.getElementById(`edit-preview-${item.id}`) as HTMLInputElement
+
+                                                                                fd.append('title', titleInput.value)
+                                                                                fd.append('lesson_type', typeSelect.value)
+                                                                                fd.append('content_url', urlInput.value)
+                                                                                if (durationInput.value) fd.append('duration_minutes', durationInput.value)
+                                                                                if (previewCheck.checked) fd.append('is_preview', 'on')
+
+                                                                                updateLesson(fd).then(() => setEditingLessonId(null))
+                                                                            }} className="px-3 py-1.5 text-xs font-bold bg-primary text-white hover:bg-primary-dark rounded-lg transition-colors">บันทึกส่ง</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+
+                                                        // Inline Edit UI for Quiz
+                                                        if (editingQuizId === item.id && item.itemType === 'quiz') {
+                                                            return (
+                                                                <div key={item.id} className="p-4 bg-amber-50/50 border-b border-gray-100 flex items-center gap-3">
+                                                                    <MaterialIcon name="quiz" className="text-amber-500 text-lg" />
+                                                                    <input type="text" id={`edit-quiz-title-${item.id}`} defaultValue={item.title} className="form-input flex-1 text-sm font-medium" placeholder="ชื่อแบบทดสอบ..." autoFocus />
+                                                                    <button type="button" onClick={() => setEditingQuizId(null)} className="px-3 py-1.5 text-xs font-medium text-text-sub hover:bg-amber-100 rounded-lg transition-colors">ยกเลิก</button>
+                                                                    <button type="button" onClick={() => {
+                                                                        if (!updateQuiz) return
+                                                                        const fd = new FormData()
+                                                                        fd.append('quiz_id', item.id)
+                                                                        if (course?.id) fd.append('course_id', course.id)
+
+                                                                        const titleInput = document.getElementById(`edit-quiz-title-${item.id}`) as HTMLInputElement
+                                                                        fd.append('title', titleInput.value)
+
+                                                                        updateQuiz(fd).then(() => setEditingQuizId(null))
+                                                                    }} className="px-3 py-1.5 text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 rounded-lg transition-colors">บันทึก</button>
+                                                                </div>
+                                                            )
+                                                        }
+
                                                         return (
-                                                            <div key={item.id} className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 transition-colors">
-                                                                <MaterialIcon name="drag_indicator" className="text-gray-300 text-sm" />
+                                                            <div key={item.id} className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-50 transition-colors group">
+                                                                <MaterialIcon name="drag_indicator" className="text-gray-300 text-sm cursor-grab" />
                                                                 <MaterialIcon name={typeIcon} className={`${typeColor} text-base`} />
                                                                 <span className="text-sm text-text-main flex-1">{item.title}</span>
+
+                                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                                                    {item.itemType === 'lesson' && updateLesson && (
+                                                                        <button type="button" onClick={() => setEditingLessonId(item.id)} className="p-1 rounded hover:bg-blue-100 text-blue-500 hover:text-blue-700 transition-colors" title="แก้ไข">
+                                                                            <MaterialIcon name="edit" className="text-sm" />
+                                                                        </button>
+                                                                    )}
+                                                                    {item.itemType === 'quiz' && updateQuiz && (
+                                                                        <button type="button" onClick={() => setEditingQuizId(item.id)} className="p-1 rounded hover:bg-amber-100 text-amber-500 hover:text-amber-700 transition-colors" title="แก้ไข">
+                                                                            <MaterialIcon name="edit" className="text-sm" />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+
                                                                 {item.itemType === 'lesson' && deleteLesson && (
-                                                                    <form action={deleteLesson} className="inline">
-                                                                        <input type="hidden" name="lesson_id" value={item.id} />
-                                                                        <input type="hidden" name="course_id" value={course?.id || ''} />
-                                                                        <button type="submit" className="p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors">
+                                                                    <div className="inline ml-1">
+                                                                        <button type="button" onClick={() => {
+                                                                            if (confirm('ลบบทเรียนนี้?')) {
+                                                                                const fd = new FormData()
+                                                                                fd.append('lesson_id', item.id)
+                                                                                if (course?.id) fd.append('course_id', course.id)
+                                                                                deleteLesson(fd)
+                                                                            }
+                                                                        }} className="p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors">
                                                                             <MaterialIcon name="delete" className="text-sm" />
                                                                         </button>
-                                                                    </form>
+                                                                    </div>
                                                                 )}
                                                                 {item.itemType === 'quiz' && deleteQuiz && (
-                                                                    <form action={deleteQuiz} className="inline">
-                                                                        <input type="hidden" name="quiz_id" value={item.id} />
-                                                                        <input type="hidden" name="course_id" value={course?.id || ''} />
-                                                                        <button type="submit" className="p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors">
+                                                                    <div className="inline ml-1">
+                                                                        <button type="button" onClick={() => {
+                                                                            if (confirm('ลบแบบทดสอบนี้?')) {
+                                                                                const fd = new FormData()
+                                                                                fd.append('quiz_id', item.id)
+                                                                                if (course?.id) fd.append('course_id', course.id)
+                                                                                deleteQuiz(fd)
+                                                                            }
+                                                                        }} className="p-1 rounded hover:bg-red-100 text-red-400 hover:text-red-600 transition-colors">
                                                                             <MaterialIcon name="delete" className="text-sm" />
                                                                         </button>
-                                                                    </form>
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         )
@@ -382,16 +499,46 @@ export default function CourseForm({
                                                     {/* Add item buttons */}
                                                     {addingTo?.sectionId === section.id ? (
                                                         <div className="px-4 py-3 bg-gray-50">
-                                                            <form action={addingTo.type === 'quiz' ? createQuiz : createLesson} onSubmit={() => { setAddingTo(null); setNewItemTitle('') }}>
-                                                                <input type="hidden" name="section_id" value={section.id} />
-                                                                <input type="hidden" name="course_id" value={course?.id || ''} />
-                                                                {addingTo.type !== 'quiz' && <input type="hidden" name="lesson_type" value={addingTo.type === 'attachment' ? 'attachment' : 'video'} />}
-                                                                <div className="flex items-center gap-2">
-                                                                    <input type="text" name={addingTo.type === 'quiz' ? 'title' : 'title'} value={newItemTitle} onChange={e => setNewItemTitle(e.target.value)} placeholder={`ชื่อ${addingTo.type === 'quiz' ? 'แบบทดสอบ' : addingTo.type === 'attachment' ? 'ไฟล์แนบ' : 'บทเรียน'}...`} className="form-input flex-1 text-sm" autoFocus />
-                                                                    <button type="submit" className="px-3 py-2 bg-primary text-white text-xs rounded-lg font-bold hover:bg-primary-dark transition-colors">เพิ่ม</button>
-                                                                    <button type="button" onClick={() => setAddingTo(null)} className="px-3 py-2 bg-gray-200 text-text-sub text-xs rounded-lg font-medium hover:bg-gray-300 transition-colors">ยกเลิก</button>
-                                                                </div>
-                                                            </form>
+                                                            <div className="flex items-center gap-2">
+                                                                <input
+                                                                    type="text"
+                                                                    id={`new-item-title-${section.id}`}
+                                                                    value={newItemTitle}
+                                                                    onChange={e => setNewItemTitle(e.target.value)}
+                                                                    placeholder={`ชื่อ${addingTo.type === 'quiz' ? 'แบบทดสอบ' : addingTo.type === 'attachment' ? 'ไฟล์แนบ' : 'บทเรียน'}...`}
+                                                                    className="form-input flex-1 text-sm"
+                                                                    autoFocus
+                                                                    onKeyDown={e => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault()
+                                                                            // Trigger Add
+                                                                            document.getElementById(`add-item-btn-${section.id}`)?.click()
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    id={`add-item-btn-${section.id}`}
+                                                                    disabled={!newItemTitle.trim()}
+                                                                    onClick={() => {
+                                                                        const fd = new FormData()
+                                                                        fd.append('section_id', section.id)
+                                                                        if (course?.id) fd.append('course_id', course.id)
+                                                                        fd.append('title', newItemTitle)
+
+                                                                        if (addingTo.type === 'quiz' && createQuiz) {
+                                                                            createQuiz(fd).then(() => { setAddingTo(null); setNewItemTitle('') })
+                                                                        } else if (createLesson) {
+                                                                            fd.append('lesson_type', addingTo.type === 'attachment' ? 'attachment' : 'video')
+                                                                            createLesson(fd).then(() => { setAddingTo(null); setNewItemTitle('') })
+                                                                        }
+                                                                    }}
+                                                                    className="px-3 py-2 bg-primary text-white text-xs rounded-lg font-bold hover:bg-primary-dark transition-colors disabled:opacity-50"
+                                                                >
+                                                                    เพิ่ม
+                                                                </button>
+                                                                <button type="button" onClick={() => { setAddingTo(null); setNewItemTitle('') }} className="px-3 py-2 bg-gray-200 text-text-sub text-xs rounded-lg font-medium hover:bg-gray-300 transition-colors">ยกเลิก</button>
+                                                            </div>
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center gap-2 px-4 py-2.5 border-t border-gray-100">
@@ -425,14 +572,36 @@ export default function CourseForm({
                             {/* Add Section */}
                             {createSection && (
                                 <div className="mt-4 flex items-center gap-2">
-                                    <form action={createSection} onSubmit={() => setNewSectionTitle('')} className="flex items-center gap-2 flex-1">
-                                        <input type="hidden" name="course_id" value={course?.id || ''} />
-                                        <input type="text" name="title" value={newSectionTitle} onChange={e => setNewSectionTitle(e.target.value)} placeholder="ชื่อบทใหม่..." className="form-input flex-1 text-sm" />
-                                        <button type="submit" disabled={!newSectionTitle.trim()} className="flex items-center gap-1 px-4 py-2 bg-primary text-white text-xs rounded-lg font-bold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <div className="flex items-center gap-2 flex-1">
+                                        <input
+                                            type="text"
+                                            value={newSectionTitle}
+                                            onChange={e => setNewSectionTitle(e.target.value)}
+                                            placeholder="ชื่อบทใหม่..."
+                                            className="form-input flex-1 text-sm"
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault()
+                                                    document.getElementById('add-section-btn')?.click()
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            id="add-section-btn"
+                                            disabled={!newSectionTitle.trim()}
+                                            onClick={() => {
+                                                const fd = new FormData()
+                                                if (course?.id) fd.append('course_id', course.id)
+                                                fd.append('title', newSectionTitle)
+                                                createSection(fd).then(() => setNewSectionTitle(''))
+                                            }}
+                                            className="flex items-center gap-1 px-4 py-2 bg-primary text-white text-xs rounded-lg font-bold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
                                             <MaterialIcon name="add" className="text-base" />
                                             เพิ่มบท
                                         </button>
-                                    </form>
+                                    </div>
                                 </div>
                             )}
                         </FormSection>
