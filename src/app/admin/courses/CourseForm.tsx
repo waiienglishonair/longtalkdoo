@@ -96,10 +96,15 @@ export default function CourseForm({
     }, [])
 
     // Sync WYSIWYG content to hidden input on form submit
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         if (descriptionInputRef.current && editorRef.current) {
             descriptionInputRef.current.value = editorRef.current.innerHTML
         }
+
+        // Construct FormData after the input is updated and pass it to the Server Action
+        const formData = new FormData(e.currentTarget)
+        await action(formData)
     }
 
     // Curriculum state
@@ -124,7 +129,7 @@ export default function CourseForm({
     }
 
     return (
-        <form action={action} onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
             {course && <input type="hidden" name="course_id" value={course.id} />}
             <input type="hidden" name="description" ref={descriptionInputRef} defaultValue={course?.description || ''} />
             <input type="hidden" name="instructor_id" value={selectedInstructorId} />
