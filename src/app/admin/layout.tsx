@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { logout } from '@/app/auth/actions'
+import AdminSidebar from './AdminSidebar'
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
     return <span className={`material-symbols-outlined ${className}`}>{name}</span>
@@ -32,32 +32,8 @@ export default async function AdminLayout({
 
     return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
-            {/* Sidebar */}
-            <aside className="w-64 border-r border-gray-200 bg-white flex flex-col hidden md:flex shadow-sm">
-                <div className="p-6 border-b border-gray-100">
-                    <Link href="/">
-                        <h1 className="text-2xl font-[var(--font-brand)] font-extrabold text-primary">LongTalkDoo</h1>
-                        <p className="text-xs font-medium text-text-sub">แผงควบคุมแอดมิน</p>
-                    </Link>
-                </div>
-
-                <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                    <SidebarItem icon="dashboard" label="ภาพรวม" href="/admin" />
-                    <SidebarItem icon="group" label="ผู้ใช้" href="/admin/users" />
-                    <SidebarItem icon="menu_book" label="คอร์สเรียน" href="/admin/courses" />
-                    <SidebarItem icon="school" label="ผู้สอน" href="/admin/instructors" />
-                    <SidebarItem icon="settings" label="ตั้งค่า" href="#" />
-                </nav>
-
-                <div className="p-4 border-t border-gray-100">
-                    <form action={logout}>
-                        <button type="submit" className="flex items-center gap-3 w-full p-3 rounded-lg text-text-sub hover:text-secondary hover:bg-red-50 transition-colors">
-                            <MaterialIcon name="logout" className="text-xl" />
-                            <span className="font-medium">ออกจากระบบ</span>
-                        </button>
-                    </form>
-                </div>
-            </aside>
+            {/* Sidebar — client component for active state */}
+            <AdminSidebar logoutAction={logout} />
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col overflow-hidden relative">
@@ -85,15 +61,5 @@ export default async function AdminLayout({
                 </div>
             </main>
         </div>
-    )
-}
-
-function SidebarItem({ icon, label, href, active = false }: { icon: string; label: string; href: string; active?: boolean }) {
-    return (
-        <Link href={href} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${active ? 'bg-primary/10 text-primary font-bold border border-primary/20' : 'text-text-sub hover:text-primary hover:bg-primary/5 border border-transparent font-medium'}`}>
-            <MaterialIcon name={icon} className={`text-xl ${active ? 'fill-1' : ''}`} />
-            <span>{label}</span>
-            {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary"></div>}
-        </Link>
     )
 }

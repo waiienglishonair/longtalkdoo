@@ -90,7 +90,8 @@ create policy "Admins can delete instructors" on public.instructors for delete
 --    - reviews   = count of all reviews across all courses
 -- =====================
 drop view if exists public.instructor_stats;
-create view public.instructor_stats as
+create view public.instructor_stats
+  with (security_invoker = on) as
 select
   i.id,
   i.name,

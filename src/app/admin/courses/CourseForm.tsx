@@ -457,8 +457,8 @@ export default function CourseForm({
                     </FormSection>
 
                     <FormSection title="วิดีโอแนะนำ" icon="play_circle">
-                        <FormField label="Embed URL (iframe)">
-                            <input type="url" name="media_intro" defaultValue={course?.media_intro || ''} placeholder="https://youtube.com/embed/..." className="form-input" />
+                        <FormField label="Embed Code (iframe)">
+                            <textarea name="media_intro" rows={3} defaultValue={course?.media_intro || ''} placeholder='วาง <iframe> embed code ที่นี่ เช่น <iframe src="https://youtube.com/embed/..."></iframe>' className="form-input resize-y font-mono text-xs" />
                         </FormField>
                     </FormSection>
 
@@ -554,12 +554,12 @@ export default function CourseForm({
 
 function FormSection({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2 rounded-t-2xl">
                 <MaterialIcon name={icon} className="text-primary text-lg" />
                 <h3 className="font-bold text-sm text-text-main">{title}</h3>
             </div>
-            <div className="p-5 space-y-4">{children}</div>
+            <div className="p-5 space-y-4 rounded-b-2xl">{children}</div>
         </div>
     )
 }
